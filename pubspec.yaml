@@ -6,4 +6,5 @@ environment:
 
 workspace:
   - packages/binairo_core
+  - packages/sudoku_core
   - app
