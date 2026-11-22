@@ -1,7 +1,7 @@
-import 'package:binairo_app/settings/app_settings.dart';
-import 'package:binairo_app/widgets/board_cell.dart';
-import 'package:binairo_app/widgets/celebration.dart';
-import 'package:binairo_app/widgets/hint_pulse.dart';
+import 'package:puzzlery_app/settings/app_settings.dart';
+import 'package:puzzlery_app/widgets/board_cell.dart';
+import 'package:puzzlery_app/widgets/celebration.dart';
+import 'package:puzzlery_app/widgets/hint_pulse.dart';
 import 'package:binairo_core/binairo_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,7 +17,7 @@ void main() {
     testWidgets('shows the title, new game and the three shortcuts', (
       tester,
     ) async {
-      await pumpBinairoApp(tester);
+      await pumpPuzzleryApp(tester);
 
       expect(find.text('Binairo'), findsOneWidget);
       expect(find.text('New game'), findsOneWidget);
@@ -28,7 +28,7 @@ void main() {
     });
 
     testWidgets('each shortcut opens its screen', (tester) async {
-      await pumpBinairoApp(tester);
+      await pumpPuzzleryApp(tester);
 
       for (final (shortcut, textOnScreen) in [
         ('How to play', 'Rule 1 · No three in a row'),
@@ -46,7 +46,7 @@ void main() {
     testWidgets('starting a game asks for the chosen size and level and '
         'remembers them for next time', (tester) async {
       final requestedPuzzles = <(int, Difficulty)>[];
-      final services = await pumpBinairoApp(
+      final services = await pumpPuzzleryApp(
         tester,
         requestedPuzzles: requestedPuzzles,
       );
@@ -69,7 +69,7 @@ void main() {
     testWidgets(
       'leaving an unfinished game shows a continue card that resumes it',
       (tester) async {
-        await pumpBinairoApp(tester);
+        await pumpPuzzleryApp(tester);
         await startNewGameFromHome(tester);
         await tapCell(tester, 0, 0);
 
@@ -87,7 +87,7 @@ void main() {
       'starting a new game over a saved one asks first and cancel keeps it',
       (tester) async {
         final requestedPuzzles = <(int, Difficulty)>[];
-        await pumpBinairoApp(tester, requestedPuzzles: requestedPuzzles);
+        await pumpPuzzleryApp(tester, requestedPuzzles: requestedPuzzles);
         await startNewGameFromHome(tester);
         await tapCell(tester, 0, 0);
         await tester.pageBack();
@@ -108,7 +108,7 @@ void main() {
     testWidgets('tapping an empty cell shows a zero, then a one', (
       tester,
     ) async {
-      await pumpBinairoApp(tester);
+      await pumpPuzzleryApp(tester);
       await startNewGameFromHome(tester);
 
       await tapCell(tester, 0, 0);
@@ -121,7 +121,7 @@ void main() {
     testWidgets('restart from the menu asks first and cancel keeps the moves', (
       tester,
     ) async {
-      await pumpBinairoApp(tester);
+      await pumpPuzzleryApp(tester);
       await startNewGameFromHome(tester);
       await tapCell(tester, 0, 0);
 
@@ -136,7 +136,7 @@ void main() {
     testWidgets('confirming restart from the menu clears the moves', (
       tester,
     ) async {
-      await pumpBinairoApp(tester);
+      await pumpPuzzleryApp(tester);
       await startNewGameFromHome(tester);
       await tapCell(tester, 0, 0);
 
@@ -148,7 +148,7 @@ void main() {
     });
 
     testWidgets('the menu opens how to play and settings', (tester) async {
-      await pumpBinairoApp(tester);
+      await pumpPuzzleryApp(tester);
       await startNewGameFromHome(tester);
 
       await openGameMenuItem(tester, 'How to play');
@@ -163,7 +163,7 @@ void main() {
     testWidgets(
       'given cells and player cells holding the same digit look different',
       (tester) async {
-        await pumpBinairoApp(tester);
+        await pumpPuzzleryApp(tester);
         await startNewGameFromHome(tester);
         await tapCell(tester, 0, 0);
 
@@ -186,7 +186,7 @@ void main() {
     testWidgets(
       'a cell that breaks a rule gets a ring in a color no digit uses',
       (tester) async {
-        await pumpBinairoApp(tester);
+        await pumpPuzzleryApp(tester);
         await startNewGameFromHome(tester);
         await tapCell(tester, 0, 0);
         await tapCell(tester, 0, 0);
@@ -213,7 +213,7 @@ void main() {
     testWidgets('turning off rule errors in settings removes the red ring', (
       tester,
     ) async {
-      final services = await pumpBinairoApp(tester);
+      final services = await pumpPuzzleryApp(tester);
       await startNewGameFromHome(tester);
       await tapCell(tester, 0, 0);
       await tapCell(tester, 0, 0);
@@ -235,7 +235,7 @@ void main() {
     });
 
     testWidgets('turning off counters in settings hides them', (tester) async {
-      final services = await pumpBinairoApp(tester);
+      final services = await pumpPuzzleryApp(tester);
       await startNewGameFromHome(tester);
       expect(find.byKey(const ValueKey('row-counter-0')), findsOneWidget);
 
@@ -251,7 +251,7 @@ void main() {
     testWidgets('solving plays the celebration, then shows a first best time', (
       tester,
     ) async {
-      await pumpBinairoApp(tester);
+      await pumpPuzzleryApp(tester);
       await startNewGameFromHome(tester);
 
       await solvePuzzleMissingTwoCells(tester);
@@ -271,7 +271,7 @@ void main() {
     testWidgets(
       'after solving, home has no continue card and statistics count the solve',
       (tester) async {
-        final services = await pumpBinairoApp(tester);
+        final services = await pumpPuzzleryApp(tester);
         await startNewGameFromHome(tester);
         await solvePuzzleMissingTwoCells(tester);
         await tester.pumpAndSettle();
@@ -292,7 +292,7 @@ void main() {
   testWidgets('choosing dark theme in settings changes the app theme', (
     tester,
   ) async {
-    await pumpBinairoApp(tester);
+    await pumpPuzzleryApp(tester);
     await tester.tap(find.text('Settings'));
     await tester.pumpAndSettle();
 
@@ -344,7 +344,7 @@ void main() {
     ) async {
       setPhoneLanguage(tester, const Locale('fr', 'CA'));
 
-      await pumpBinairoApp(tester);
+      await pumpPuzzleryApp(tester);
 
       expect(find.text('Nouvelle partie'), findsOneWidget);
       expect(find.text('Comment jouer'), findsOneWidget);
@@ -355,7 +355,7 @@ void main() {
       (tester) async {
         setPhoneLanguage(tester, const Locale('de', 'DE'));
 
-        await pumpBinairoApp(tester);
+        await pumpPuzzleryApp(tester);
 
         expect(find.text('New game'), findsOneWidget);
       },
@@ -363,7 +363,7 @@ void main() {
 
     testWidgets('choosing Français in settings switches the app to French and '
         'is remembered', (tester) async {
-      final services = await pumpBinairoApp(tester);
+      final services = await pumpPuzzleryApp(tester);
 
       await openSettingsAndChooseLanguage(
         tester,
@@ -379,7 +379,7 @@ void main() {
       'choosing English in settings wins over a phone set to French',
       (tester) async {
         setPhoneLanguage(tester, const Locale('fr', 'CA'));
-        await pumpBinairoApp(tester);
+        await pumpPuzzleryApp(tester);
 
         await openSettingsAndChooseLanguage(
           tester,
@@ -395,7 +395,7 @@ void main() {
       tester,
     ) async {
       setPhoneLanguage(tester, const Locale('fr', 'CA'));
-      await pumpBinairoApp(tester);
+      await pumpPuzzleryApp(tester);
       await openSettingsAndChooseLanguage(
         tester,
         settingsLabel: 'Paramètres',
@@ -411,7 +411,7 @@ void main() {
       tester,
     ) async {
       setPhoneLanguage(tester, const Locale('fr', 'CA'));
-      await pumpBinairoApp(tester);
+      await pumpPuzzleryApp(tester);
       await tester.tap(find.text('Nouvelle partie'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Commencer'));
@@ -447,7 +447,7 @@ void main() {
     testWidgets('tapping a cell you can change gives one keyboard-like buzz', (
       tester,
     ) async {
-      await pumpBinairoApp(tester);
+      await pumpPuzzleryApp(tester);
       await startNewGameFromHome(tester);
 
       await tapCell(tester, 0, 0);
@@ -456,7 +456,7 @@ void main() {
     });
 
     testWidgets('tapping a locked clue cell gives no buzz', (tester) async {
-      await pumpBinairoApp(tester);
+      await pumpPuzzleryApp(tester);
       await startNewGameFromHome(tester);
 
       await tapCell(tester, 1, 1);
@@ -465,7 +465,7 @@ void main() {
     });
 
     testWidgets('turning vibration off stops the tap buzz', (tester) async {
-      final services = await pumpBinairoApp(tester);
+      final services = await pumpPuzzleryApp(tester);
       await services.settingsController.update(
         (settings) => settings.copyWith(vibrationEnabled: false),
       );
@@ -488,7 +488,7 @@ void main() {
     Finder anyHintPulse() => find.byType(HintPulse);
 
     testWidgets('the menu has hint right after restart', (tester) async {
-      await pumpBinairoApp(tester);
+      await pumpPuzzleryApp(tester);
       await startNewGameFromHome(tester);
 
       await tester.tap(find.byTooltip('Menu'));
@@ -504,7 +504,7 @@ void main() {
     testWidgets(
       'a hint from the menu makes a cell glow without showing its value',
       (tester) async {
-        await pumpBinairoApp(tester);
+        await pumpPuzzleryApp(tester);
         await startNewGameFromHome(tester);
 
         await askForHintFromMenu(tester);
@@ -516,7 +516,7 @@ void main() {
     );
 
     testWidgets('tapping a cell stops the glow', (tester) async {
-      await pumpBinairoApp(tester);
+      await pumpPuzzleryApp(tester);
       await startNewGameFromHome(tester);
       await askForHintFromMenu(tester);
 
@@ -528,7 +528,7 @@ void main() {
     testWidgets('a hint after a wrong move points at that move and says so', (
       tester,
     ) async {
-      await pumpBinairoApp(tester);
+      await pumpPuzzleryApp(tester);
       await startNewGameFromHome(tester);
       await tapCell(tester, 0, 0);
       await tapCell(tester, 0, 0);
@@ -542,7 +542,7 @@ void main() {
     testWidgets(
       'auto-hint makes a cell glow after the chosen time without moves',
       (tester) async {
-        final services = await pumpBinairoApp(tester);
+        final services = await pumpPuzzleryApp(tester);
         await services.settingsController.update(
           (settings) => settings.copyWith(
             autoHintEnabled: true,
@@ -560,7 +560,7 @@ void main() {
     );
 
     testWidgets('a move restarts the auto-hint wait', (tester) async {
-      final services = await pumpBinairoApp(tester);
+      final services = await pumpPuzzleryApp(tester);
       await services.settingsController.update(
         (settings) => settings.copyWith(
           autoHintEnabled: true,
@@ -581,7 +581,7 @@ void main() {
     testWidgets('with auto-hint off, nothing glows however long you wait', (
       tester,
     ) async {
-      await pumpBinairoApp(tester);
+      await pumpPuzzleryApp(tester);
       await startNewGameFromHome(tester);
 
       await tester.pump(const Duration(minutes: 5));

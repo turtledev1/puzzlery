@@ -1,5 +1,5 @@
-name: binairo_app
-description: Play Binairo puzzles on your phone.
+name: puzzlery_app
+description: Play logic puzzles on your phone.
 publish_to: 'none'
 version: 0.1.0+1
 

@@ -1,8 +1,8 @@
-import 'package:binairo_app/app/app_services.dart';
-import 'package:binairo_app/app/binairo_app.dart';
-import 'package:binairo_app/game/saved_game_repository.dart';
-import 'package:binairo_app/settings/settings_controller.dart';
-import 'package:binairo_app/statistics/statistics_repository.dart';
+import 'package:puzzlery_app/app/app_services.dart';
+import 'package:puzzlery_app/app/puzzlery_app.dart';
+import 'package:puzzlery_app/game/saved_game_repository.dart';
+import 'package:puzzlery_app/settings/settings_controller.dart';
+import 'package:puzzlery_app/statistics/statistics_repository.dart';
 import 'package:binairo_core/binairo_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,7 +14,7 @@ final Puzzle puzzleMissingTwoCells = fourByFourPuzzleMissingCells(const [
   CellPosition(3, 3),
 ]);
 
-Future<AppServices> pumpBinairoApp(
+Future<AppServices> pumpPuzzleryApp(
   WidgetTester tester, {
   List<(int, Difficulty)>? requestedPuzzles,
 }) async {
@@ -28,7 +28,7 @@ Future<AppServices> pumpBinairoApp(
       return puzzleMissingTwoCells;
     },
   );
-  await tester.pumpWidget(BinairoApp(services: services));
+  await tester.pumpWidget(PuzzleryApp(services: services));
   await tester.pumpAndSettle();
   return services;
 }

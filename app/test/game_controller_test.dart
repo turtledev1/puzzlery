@@ -1,4 +1,4 @@
-import 'package:binairo_app/game/game_controller.dart';
+import 'package:puzzlery_app/game/game_controller.dart';
 import 'package:binairo_core/binairo_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 

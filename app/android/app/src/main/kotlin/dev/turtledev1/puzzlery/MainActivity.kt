@@ -1,4 +1,4 @@
-package dev.turtledev1.binairo_app
+package dev.turtledev1.puzzlery
 
 import io.flutter.embedding.android.FlutterActivity
 

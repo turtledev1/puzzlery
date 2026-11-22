@@ -1,4 +1,4 @@
-import 'package:binairo_app/game/saved_game_repository.dart';
+import 'package:puzzlery_app/game/saved_game_repository.dart';
 import 'package:binairo_core/binairo_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
