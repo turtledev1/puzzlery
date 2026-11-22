@@ -75,6 +75,12 @@ class HowToPlayScreen extends StatelessWidget {
                 'many 0s (orange) and 1s (blue) are still missing.',
           ),
           const _ControlTip(
+            icon: Icons.lightbulb_outline,
+            text:
+                'Stuck? Tap Hint in the ⋮ menu. A yellow glow shows a cell '
+                'you can figure out with the rules. It never shows the number.',
+          ),
+          const _ControlTip(
             icon: Icons.undo,
             text: 'Use Undo to take back your last move.',
           ),

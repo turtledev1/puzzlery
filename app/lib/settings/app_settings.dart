@@ -9,7 +9,15 @@ class AppSettings {
     this.showLineCounters = true,
     this.lastBoardSize = 8,
     this.lastDifficulty = Difficulty.easy,
+    this.autoHintEnabled = false,
+    this.autoHintDelay = const Duration(minutes: 1),
   });
+
+  static const List<Duration> autoHintDelayChoices = [
+    Duration(seconds: 30),
+    Duration(minutes: 1),
+    Duration(minutes: 2),
+  ];
 
   final ThemeMode themeMode;
   final bool vibrationEnabled;
@@ -17,6 +25,8 @@ class AppSettings {
   final bool showLineCounters;
   final int lastBoardSize;
   final Difficulty lastDifficulty;
+  final bool autoHintEnabled;
+  final Duration autoHintDelay;
 
   AppSettings copyWith({
     ThemeMode? themeMode,
@@ -25,6 +35,8 @@ class AppSettings {
     bool? showLineCounters,
     int? lastBoardSize,
     Difficulty? lastDifficulty,
+    bool? autoHintEnabled,
+    Duration? autoHintDelay,
   }) => AppSettings(
     themeMode: themeMode ?? this.themeMode,
     vibrationEnabled: vibrationEnabled ?? this.vibrationEnabled,
@@ -32,5 +44,7 @@ class AppSettings {
     showLineCounters: showLineCounters ?? this.showLineCounters,
     lastBoardSize: lastBoardSize ?? this.lastBoardSize,
     lastDifficulty: lastDifficulty ?? this.lastDifficulty,
+    autoHintEnabled: autoHintEnabled ?? this.autoHintEnabled,
+    autoHintDelay: autoHintDelay ?? this.autoHintDelay,
   );
 }

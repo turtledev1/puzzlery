@@ -42,7 +42,7 @@ class DeductionEngine {
 
   int get _halfSize => size ~/ 2;
 
-  int get _lineCount => size * 2;
+  int get lineCount => size * 2;
 
   bool get isComplete => !cellCodes.contains(emptyCellCode);
 
@@ -67,20 +67,8 @@ class DeductionEngine {
 
   bool _applyRuleOnEveryLine(DeductionRule rule) {
     var anyCellFilled = false;
-    for (var lineIndex = 0; lineIndex < _lineCount; lineIndex++) {
-      final lineCellFilled = switch (rule) {
-        DeductionRule.adjacentPair => _applyAdjacentPair(lineIndex),
-        DeductionRule.gapBetweenTwo => _applyGapBetweenTwo(lineIndex),
-        DeductionRule.lineCountComplete => _applyLineCountComplete(lineIndex),
-        DeductionRule.lineCompletionLookahead => _applyLineCompletion(
-          lineIndex,
-          rejectCopiesOfFullLines: false,
-        ),
-        DeductionRule.duplicateLineElimination => _applyLineCompletion(
-          lineIndex,
-          rejectCopiesOfFullLines: true,
-        ),
-      };
+    for (var lineIndex = 0; lineIndex < lineCount; lineIndex++) {
+      final lineCellFilled = applyRuleOnLine(rule, lineIndex);
       if (_hasFoundContradiction) {
         return false;
       }
@@ -88,6 +76,20 @@ class DeductionEngine {
     }
     return anyCellFilled;
   }
+
+  bool applyRuleOnLine(DeductionRule rule, int lineIndex) => switch (rule) {
+    DeductionRule.adjacentPair => _applyAdjacentPair(lineIndex),
+    DeductionRule.gapBetweenTwo => _applyGapBetweenTwo(lineIndex),
+    DeductionRule.lineCountComplete => _applyLineCountComplete(lineIndex),
+    DeductionRule.lineCompletionLookahead => _applyLineCompletion(
+      lineIndex,
+      rejectCopiesOfFullLines: false,
+    ),
+    DeductionRule.duplicateLineElimination => _applyLineCompletion(
+      lineIndex,
+      rejectCopiesOfFullLines: true,
+    ),
+  };
 
   int _cellIndex(int lineIndex, int position) => lineIndex < size
       ? lineIndex * size + position

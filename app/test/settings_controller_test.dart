@@ -16,6 +16,8 @@ void main() {
     expect(settings.showLineCounters, isTrue);
     expect(settings.lastBoardSize, 8);
     expect(settings.lastDifficulty, Difficulty.easy);
+    expect(settings.autoHintEnabled, isFalse);
+    expect(settings.autoHintDelay, const Duration(minutes: 1));
   });
 
   test('changed settings are still there after the app restarts', () async {
@@ -29,6 +31,8 @@ void main() {
         showLineCounters: false,
         lastBoardSize: 12,
         lastDifficulty: Difficulty.hard,
+        autoHintEnabled: true,
+        autoHintDelay: const Duration(seconds: 30),
       ),
     );
     final reloaded = (await SettingsController.load()).settings;
@@ -39,6 +43,8 @@ void main() {
     expect(reloaded.showLineCounters, isFalse);
     expect(reloaded.lastBoardSize, 12);
     expect(reloaded.lastDifficulty, Difficulty.hard);
+    expect(reloaded.autoHintEnabled, isTrue);
+    expect(reloaded.autoHintDelay, const Duration(seconds: 30));
   });
 
   test('updating notifies listeners so the screens rebuild', () async {

@@ -1,5 +1,6 @@
 import 'package:binairo_app/widgets/board_cell.dart';
 import 'package:binairo_app/widgets/celebration.dart';
+import 'package:binairo_app/widgets/hint_pulse.dart';
 import 'package:binairo_core/binairo_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -352,6 +353,119 @@ void main() {
       await tapCell(tester, 0, 0);
 
       expect(hapticTypes, isEmpty);
+    });
+  });
+
+  group('hints', () {
+    Future<void> askForHintFromMenu(WidgetTester tester) async {
+      await tester.tap(find.byTooltip('Menu'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Hint'));
+      await tester.pump(const Duration(milliseconds: 500));
+    }
+
+    Finder anyHintPulse() => find.byType(HintPulse);
+
+    testWidgets('the menu has hint right after restart', (tester) async {
+      await pumpBinairoApp(tester);
+      await startNewGameFromHome(tester);
+
+      await tester.tap(find.byTooltip('Menu'));
+      await tester.pumpAndSettle();
+
+      final restartTop = tester.getTopLeft(find.text('Restart')).dy;
+      final hintTop = tester.getTopLeft(find.text('Hint')).dy;
+      final howToPlayTop = tester.getTopLeft(find.text('How to play')).dy;
+      expect(hintTop, greaterThan(restartTop));
+      expect(hintTop, lessThan(howToPlayTop));
+    });
+
+    testWidgets(
+      'a hint from the menu makes a cell glow without showing its value',
+      (tester) async {
+        await pumpBinairoApp(tester);
+        await startNewGameFromHome(tester);
+
+        await askForHintFromMenu(tester);
+
+        expect(find.byKey(const ValueKey('hint-3-3')), findsOneWidget);
+        expect(digitInCell(3, 3, '0'), findsNothing);
+        expect(digitInCell(3, 3, '1'), findsNothing);
+      },
+    );
+
+    testWidgets('tapping a cell stops the glow', (tester) async {
+      await pumpBinairoApp(tester);
+      await startNewGameFromHome(tester);
+      await askForHintFromMenu(tester);
+
+      await tapCell(tester, 0, 0);
+
+      expect(anyHintPulse(), findsNothing);
+    });
+
+    testWidgets('a hint after a wrong move points at that move and says so', (
+      tester,
+    ) async {
+      await pumpBinairoApp(tester);
+      await startNewGameFromHome(tester);
+      await tapCell(tester, 0, 0);
+      await tapCell(tester, 0, 0);
+
+      await askForHintFromMenu(tester);
+
+      expect(find.byKey(const ValueKey('hint-0-0')), findsOneWidget);
+      expect(find.textContaining('does not fit'), findsOneWidget);
+    });
+
+    testWidgets(
+      'auto-hint makes a cell glow after the chosen time without moves',
+      (tester) async {
+        final services = await pumpBinairoApp(tester);
+        await services.settingsController.update(
+          (settings) => settings.copyWith(
+            autoHintEnabled: true,
+            autoHintDelay: const Duration(seconds: 30),
+          ),
+        );
+        await startNewGameFromHome(tester);
+
+        await tester.pump(const Duration(seconds: 29));
+        expect(anyHintPulse(), findsNothing);
+
+        await tester.pump(const Duration(seconds: 2));
+        expect(anyHintPulse(), findsOneWidget);
+      },
+    );
+
+    testWidgets('a move restarts the auto-hint wait', (tester) async {
+      final services = await pumpBinairoApp(tester);
+      await services.settingsController.update(
+        (settings) => settings.copyWith(
+          autoHintEnabled: true,
+          autoHintDelay: const Duration(seconds: 30),
+        ),
+      );
+      await startNewGameFromHome(tester);
+
+      await tester.pump(const Duration(seconds: 20));
+      await tapCell(tester, 3, 3);
+      await tester.pump(const Duration(seconds: 20));
+
+      expect(anyHintPulse(), findsNothing);
+      await tester.pump(const Duration(seconds: 11));
+      expect(anyHintPulse(), findsOneWidget);
+    });
+
+    testWidgets('with auto-hint off, nothing glows however long you wait', (
+      tester,
+    ) async {
+      await pumpBinairoApp(tester);
+      await startNewGameFromHome(tester);
+
+      await tester.pump(const Duration(minutes: 5));
+
+      expect(anyHintPulse(), findsNothing);
     });
   });
 }

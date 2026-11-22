@@ -19,6 +19,7 @@ class GameController extends ChangeNotifier {
   final Duration _elapsedBeforeThisSession;
   Board _currentBoard;
   Set<CellPosition> _cellsInViolation = const {};
+  Hint? _activeHint;
   bool _isSolved = false;
 
   Board get currentBoard => _currentBoard;
@@ -26,6 +27,8 @@ class GameController extends ChangeNotifier {
   Set<CellPosition> get cellsInViolation => _cellsInViolation;
 
   bool get isSolved => _isSolved;
+
+  Hint? get activeHint => _activeHint;
 
   bool get canUndo => _previousBoards.isNotEmpty && !_isSolved;
 
@@ -83,7 +86,19 @@ class GameController extends ChangeNotifier {
   int _valuesLeft(List<CellValue> line, CellValue value) =>
       _currentBoard.halfSize - line.where((cell) => cell == value).length;
 
+  void requestHint() {
+    if (_isSolved) {
+      return;
+    }
+    _activeHint = HintFinder.findHint(
+      currentBoard: _currentBoard,
+      solutionBoard: puzzle.solutionBoard,
+    );
+    notifyListeners();
+  }
+
   void _refreshDerivedState() {
+    _activeHint = null;
     _cellsInViolation = BoardValidator.findCellsInViolation(_currentBoard);
     _isSolved = _currentBoard.isFull && _cellsInViolation.isEmpty;
     if (_isSolved) {

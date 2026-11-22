@@ -14,11 +14,17 @@ class SettingsController extends ChangeNotifier {
   static const String _showLineCountersKey = 'settings.show_line_counters';
   static const String _lastBoardSizeKey = 'settings.last_board_size';
   static const String _lastDifficultyKey = 'settings.last_difficulty';
+  static const String _autoHintEnabledKey = 'settings.auto_hint_enabled';
+  static const String _autoHintDelaySecondsKey =
+      'settings.auto_hint_delay_seconds';
 
   static Future<SettingsController> load() async {
     final preferences = await SharedPreferences.getInstance();
     const defaults = AppSettings();
     final savedBoardSize = preferences.getInt(_lastBoardSizeKey);
+    final savedAutoHintDelay = Duration(
+      seconds: preferences.getInt(_autoHintDelaySecondsKey) ?? -1,
+    );
     return SettingsController._(
       AppSettings(
         themeMode: _enumByNameOrDefault(
@@ -42,6 +48,13 @@ class SettingsController extends ChangeNotifier {
           preferences.getString(_lastDifficultyKey),
           defaults.lastDifficulty,
         ),
+        autoHintEnabled:
+            preferences.getBool(_autoHintEnabledKey) ??
+            defaults.autoHintEnabled,
+        autoHintDelay:
+            AppSettings.autoHintDelayChoices.contains(savedAutoHintDelay)
+            ? savedAutoHintDelay
+            : defaults.autoHintDelay,
       ),
     );
   }
@@ -62,6 +75,11 @@ class SettingsController extends ChangeNotifier {
     await preferences.setString(
       _lastDifficultyKey,
       _settings.lastDifficulty.name,
+    );
+    await preferences.setBool(_autoHintEnabledKey, _settings.autoHintEnabled);
+    await preferences.setInt(
+      _autoHintDelaySecondsKey,
+      _settings.autoHintDelay.inSeconds,
     );
   }
 

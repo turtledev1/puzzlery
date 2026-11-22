@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../app/app_services.dart';
+import '../settings/app_settings.dart';
 import '../widgets/app_logo.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -84,6 +85,36 @@ class SettingsScreen extends StatelessWidget {
                   (current) => current.copyWith(showLineCounters: enabled),
                 ),
               ),
+              SwitchListTile(
+                title: const Text('Auto-hint'),
+                subtitle: const Text(
+                  'When you stop for a while, a cell you can figure out glows',
+                ),
+                value: settings.autoHintEnabled,
+                onChanged: (enabled) => settingsController.update(
+                  (current) => current.copyWith(autoHintEnabled: enabled),
+                ),
+              ),
+              if (settings.autoHintEnabled)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                  child: SegmentedButton<Duration>(
+                    segments: [
+                      for (final delay in AppSettings.autoHintDelayChoices)
+                        ButtonSegment(
+                          value: delay,
+                          label: Text(_describeDelay(delay)),
+                        ),
+                    ],
+                    selected: {settings.autoHintDelay},
+                    showSelectedIcon: false,
+                    onSelectionChanged: (selection) =>
+                        settingsController.update(
+                          (current) =>
+                              current.copyWith(autoHintDelay: selection.single),
+                        ),
+                  ),
+                ),
               sectionTitle('About'),
               const AboutListTile(
                 icon: Icon(Icons.info_outline),
@@ -97,3 +128,6 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 }
+
+String _describeDelay(Duration delay) =>
+    delay.inSeconds < 60 ? '${delay.inSeconds} s' : '${delay.inMinutes} min';

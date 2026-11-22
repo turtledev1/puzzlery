@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import '../game/game_controller.dart';
 import 'board_cell.dart';
 import 'celebration.dart';
+import 'hint_pulse.dart';
 
 /// Line counters sit right of each row and below each column, and show the
 /// zeros and ones still missing in that line.
@@ -25,6 +26,21 @@ class BoardGrid extends StatelessWidget {
   final bool showRuleErrors;
   final bool showLineCounters;
   final bool tapFeedbackEnabled;
+
+  Widget _withHintPulse(int row, int column, Widget cell) {
+    final hint = controller.activeHint;
+    if (hint == null || hint.cell != CellPosition(row, column)) {
+      return cell;
+    }
+    return HintPulse(
+      key: ValueKey('hint-$row-$column'),
+      color: switch (hint) {
+        DeducibleCellHint() => HintPulse.deducibleCellColor,
+        WrongCellHint() => BoardCell.violationColor,
+      },
+      child: cell,
+    );
+  }
 
   void _onCellTapped(int row, int column) {
     final cellCanChange =
@@ -55,24 +71,28 @@ class BoardGrid extends StatelessWidget {
                       for (var column = 0; column < size; column++)
                         SizedBox.square(
                           dimension: slotSize,
-                          child: CelebrationWave(
-                            celebration: celebration,
-                            row: row,
-                            column: column,
-                            boardSize: size,
-                            child: BoardCell(
-                              key: ValueKey('cell-$row-$column'),
-                              value: controller.currentBoard.cellAt(
-                                row,
-                                column,
+                          child: _withHintPulse(
+                            row,
+                            column,
+                            CelebrationWave(
+                              celebration: celebration,
+                              row: row,
+                              column: column,
+                              boardSize: size,
+                              child: BoardCell(
+                                key: ValueKey('cell-$row-$column'),
+                                value: controller.currentBoard.cellAt(
+                                  row,
+                                  column,
+                                ),
+                                isGiven: controller.isGivenCell(row, column),
+                                isInViolation:
+                                    showRuleErrors &&
+                                    controller.cellsInViolation.contains(
+                                      CellPosition(row, column),
+                                    ),
+                                onTap: () => _onCellTapped(row, column),
                               ),
-                              isGiven: controller.isGivenCell(row, column),
-                              isInViolation:
-                                  showRuleErrors &&
-                                  controller.cellsInViolation.contains(
-                                    CellPosition(row, column),
-                                  ),
-                              onTap: () => _onCellTapped(row, column),
                             ),
                           ),
                         ),

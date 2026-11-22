@@ -120,4 +120,30 @@ void main() {
       greaterThanOrEqualTo(const Duration(minutes: 3)),
     );
   });
+
+  test('asking for a hint points at a cell without filling it', () {
+    controller.requestHint();
+
+    final hint = controller.activeHint;
+    expect(hint, isA<DeducibleCellHint>());
+    expect(controller.currentBoard.cellAtPosition(hint!.cell), CellValue.empty);
+  });
+
+  test('any move clears the hint', () {
+    controller.requestHint();
+
+    controller.tapCell(0, 0);
+
+    expect(controller.activeHint, isNull);
+  });
+
+  test('a wrong move makes the hint point at that move', () {
+    controller.tapCell(0, 0);
+    controller.tapCell(0, 0);
+
+    controller.requestHint();
+
+    expect(controller.activeHint, isA<WrongCellHint>());
+    expect(controller.activeHint!.cell, const CellPosition(0, 0));
+  });
 }

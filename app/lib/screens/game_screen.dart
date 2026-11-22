@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:binairo_core/binairo_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -10,7 +13,7 @@ import '../widgets/celebration.dart';
 import 'how_to_play_screen.dart';
 import 'settings_screen.dart';
 
-enum _GameMenuAction { restart, howToPlay, settings }
+enum _GameMenuAction { restart, hint, howToPlay, settings }
 
 class GameScreen extends StatefulWidget {
   const GameScreen({super.key, required this.controller});
@@ -32,6 +35,7 @@ class _GameScreenState extends State<GameScreen>
   );
   AppServices? _services;
   bool _hasCelebrated = false;
+  Timer? _inactivityTimer;
 
   GameController get _controller => widget.controller;
 
@@ -48,13 +52,17 @@ class _GameScreenState extends State<GameScreen>
     final isFirstDependencyChange = _services == null;
     _services = AppScope.of(context);
     if (isFirstDependencyChange) {
+      _services!.settingsController.addListener(_restartInactivityTimer);
       _saveProgress();
+      _restartInactivityTimer();
     }
   }
 
   @override
   void dispose() {
     _saveProgress();
+    _inactivityTimer?.cancel();
+    _services?.settingsController.removeListener(_restartInactivityTimer);
     _appLifecycleListener.dispose();
     _celebrationController.dispose();
     _controller.removeListener(_onGameChanged);
@@ -64,9 +72,41 @@ class _GameScreenState extends State<GameScreen>
 
   void _onGameChanged() {
     _saveProgress();
+    _restartInactivityTimer();
     if (_controller.isSolved && !_hasCelebrated) {
       _hasCelebrated = true;
       _celebrateThenShowSolvedDialog();
+    }
+  }
+
+  void _restartInactivityTimer() {
+    _inactivityTimer?.cancel();
+    final settings = _services?.settingsController.settings;
+    final shouldWaitForHint =
+        settings != null &&
+        settings.autoHintEnabled &&
+        !_controller.isSolved &&
+        _controller.activeHint == null;
+    if (!shouldWaitForHint) {
+      return;
+    }
+    _inactivityTimer = Timer(settings.autoHintDelay, () {
+      if (mounted && _controller.activeHint == null) {
+        _showHint();
+      }
+    });
+  }
+
+  void _showHint() {
+    _controller.requestHint();
+    if (_controller.activeHint is WrongCellHint) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text('The glowing cell does not fit. Change it first.'),
+          ),
+        );
     }
   }
 
@@ -163,6 +203,8 @@ class _GameScreenState extends State<GameScreen>
     switch (action) {
       case _GameMenuAction.restart:
         _confirmRestart();
+      case _GameMenuAction.hint:
+        _showHint();
       case _GameMenuAction.howToPlay:
         Navigator.of(context).push(
           MaterialPageRoute<void>(builder: (_) => const HowToPlayScreen()),
@@ -201,6 +243,14 @@ class _GameScreenState extends State<GameScreen>
                   child: const ListTile(
                     leading: Icon(Icons.restart_alt),
                     title: Text('Restart'),
+                  ),
+                ),
+                PopupMenuItem(
+                  value: _GameMenuAction.hint,
+                  enabled: !_controller.isSolved,
+                  child: const ListTile(
+                    leading: Icon(Icons.lightbulb_outline),
+                    title: Text('Hint'),
                   ),
                 ),
                 const PopupMenuItem(

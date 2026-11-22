@@ -6,6 +6,7 @@ export 'src/cell_position.dart';
 export 'src/cell_value.dart';
 export 'src/deduction_rule.dart';
 export 'src/difficulty.dart';
+export 'src/hint_finder.dart';
 export 'src/logical_solver.dart';
 export 'src/puzzle_generator.dart';
 export 'src/solution_counter.dart';
