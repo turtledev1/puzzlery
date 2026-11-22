@@ -2,6 +2,7 @@ import 'package:binairo_core/binairo_core.dart';
 import 'package:flutter/material.dart';
 
 import '../game/game_options.dart';
+import '../l10n/localized_labels.dart';
 
 typedef NewGameChoice = ({int size, Difficulty difficulty});
 
@@ -36,14 +37,10 @@ class _NewGameSheetState extends State<_NewGameSheet> {
   late int _selectedSize = widget.initialSize;
   late Difficulty _selectedDifficulty = widget.initialDifficulty;
 
-  static String _describe(Difficulty difficulty) => switch (difficulty) {
-    Difficulty.easy => 'Simple steps only: pairs, gaps and line counts.',
-    Difficulty.hard => 'You need to look ahead to finish each line.',
-  };
-
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final strings = context.strings;
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
@@ -51,9 +48,9 @@ class _NewGameSheetState extends State<_NewGameSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('New game', style: textTheme.headlineSmall),
+            Text(strings.newGame, style: textTheme.headlineSmall),
             const SizedBox(height: 24),
-            Text('Size', style: textTheme.titleMedium),
+            Text(strings.boardSize, style: textTheme.titleMedium),
             const SizedBox(height: 8),
             SegmentedButton<int>(
               segments: [
@@ -66,14 +63,14 @@ class _NewGameSheetState extends State<_NewGameSheet> {
                   setState(() => _selectedSize = selection.single),
             ),
             const SizedBox(height: 24),
-            Text('Level', style: textTheme.titleMedium),
+            Text(strings.difficultyLevel, style: textTheme.titleMedium),
             const SizedBox(height: 8),
             SegmentedButton<Difficulty>(
               segments: [
                 for (final difficulty in Difficulty.values)
                   ButtonSegment(
                     value: difficulty,
-                    label: Text(capitalize(difficulty.name)),
+                    label: Text(strings.difficultyName(difficulty)),
                   ),
               ],
               selected: {_selectedDifficulty},
@@ -82,7 +79,10 @@ class _NewGameSheetState extends State<_NewGameSheet> {
                   setState(() => _selectedDifficulty = selection.single),
             ),
             const SizedBox(height: 8),
-            Text(_describe(_selectedDifficulty), style: textTheme.bodySmall),
+            Text(
+              strings.difficultyDescription(_selectedDifficulty),
+              style: textTheme.bodySmall,
+            ),
             const SizedBox(height: 32),
             FilledButton(
               style: FilledButton.styleFrom(
@@ -91,7 +91,7 @@ class _NewGameSheetState extends State<_NewGameSheet> {
               onPressed: () => Navigator.of(
                 context,
               ).pop((size: _selectedSize, difficulty: _selectedDifficulty)),
-              child: const Text('Start'),
+              child: Text(strings.start),
             ),
           ],
         ),

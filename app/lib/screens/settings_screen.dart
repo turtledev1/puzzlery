@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../app/app_services.dart';
+import '../l10n/app_localizations.dart';
+import '../l10n/localized_labels.dart';
 import '../settings/app_settings.dart';
 import '../widgets/app_logo.dart';
 
@@ -11,6 +13,7 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final settingsController = AppScope.of(context).settingsController;
     final textTheme = Theme.of(context).textTheme;
+    final strings = context.strings;
     Widget sectionTitle(String title) => Padding(
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
       child: Text(
@@ -21,32 +24,32 @@ class SettingsScreen extends StatelessWidget {
       ),
     );
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(title: Text(strings.settings)),
       body: ListenableBuilder(
         listenable: settingsController,
         builder: (context, _) {
           final settings = settingsController.settings;
           return ListView(
             children: [
-              sectionTitle('Appearance'),
+              sectionTitle(strings.settingsAppearance),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: SegmentedButton<ThemeMode>(
-                  segments: const [
+                  segments: [
                     ButtonSegment(
                       value: ThemeMode.system,
-                      label: Text('Phone'),
-                      icon: Icon(Icons.brightness_auto),
+                      label: Text(strings.followPhone),
+                      icon: const Icon(Icons.brightness_auto),
                     ),
                     ButtonSegment(
                       value: ThemeMode.light,
-                      label: Text('Light'),
-                      icon: Icon(Icons.light_mode),
+                      label: Text(strings.themeLight),
+                      icon: const Icon(Icons.light_mode),
                     ),
                     ButtonSegment(
                       value: ThemeMode.dark,
-                      label: Text('Dark'),
-                      icon: Icon(Icons.dark_mode),
+                      label: Text(strings.themeDark),
+                      icon: const Icon(Icons.dark_mode),
                     ),
                   ],
                   selected: {settings.themeMode},
@@ -56,40 +59,34 @@ class SettingsScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              sectionTitle('Game'),
+              sectionTitle(strings.settingsGame),
               SwitchListTile(
-                title: const Text('Vibration'),
-                subtitle: const Text(
-                  'Buzz when you tap a cell and when you solve a puzzle',
-                ),
+                title: Text(strings.vibration),
+                subtitle: Text(strings.vibrationDescription),
                 value: settings.vibrationEnabled,
                 onChanged: (enabled) => settingsController.update(
                   (current) => current.copyWith(vibrationEnabled: enabled),
                 ),
               ),
               SwitchListTile(
-                title: const Text('Show rule errors'),
-                subtitle: const Text('Red ring on cells that break a rule'),
+                title: Text(strings.showRuleErrors),
+                subtitle: Text(strings.showRuleErrorsDescription),
                 value: settings.showRuleErrors,
                 onChanged: (enabled) => settingsController.update(
                   (current) => current.copyWith(showRuleErrors: enabled),
                 ),
               ),
               SwitchListTile(
-                title: const Text('Show counters'),
-                subtitle: const Text(
-                  '0s and 1s still missing in each row and column',
-                ),
+                title: Text(strings.showLineCounters),
+                subtitle: Text(strings.showLineCountersDescription),
                 value: settings.showLineCounters,
                 onChanged: (enabled) => settingsController.update(
                   (current) => current.copyWith(showLineCounters: enabled),
                 ),
               ),
               SwitchListTile(
-                title: const Text('Auto-hint'),
-                subtitle: const Text(
-                  'When you stop for a while, a cell you can figure out glows',
-                ),
+                title: Text(strings.autoHint),
+                subtitle: Text(strings.autoHintDescription),
                 value: settings.autoHintEnabled,
                 onChanged: (enabled) => settingsController.update(
                   (current) => current.copyWith(autoHintEnabled: enabled),
@@ -103,7 +100,7 @@ class SettingsScreen extends StatelessWidget {
                       for (final delay in AppSettings.autoHintDelayChoices)
                         ButtonSegment(
                           value: delay,
-                          label: Text(_describeDelay(delay)),
+                          label: Text(_describeDelay(strings, delay)),
                         ),
                     ],
                     selected: {settings.autoHintDelay},
@@ -115,11 +112,34 @@ class SettingsScreen extends StatelessWidget {
                         ),
                   ),
                 ),
-              sectionTitle('About'),
-              const AboutListTile(
-                icon: Icon(Icons.info_outline),
-                applicationName: 'Binairo',
-                applicationIcon: AppLogo(size: 48),
+              sectionTitle(strings.settingsLanguage),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: DropdownMenu<AppLanguage>(
+                  key: const ValueKey('language-dropdown'),
+                  expandedInsets: EdgeInsets.zero,
+                  leadingIcon: const Icon(Icons.language),
+                  initialSelection: settings.language,
+                  dropdownMenuEntries: [
+                    for (final language in AppLanguage.values)
+                      DropdownMenuEntry(
+                        value: language,
+                        label: _languageLabel(strings, language),
+                      ),
+                  ],
+                  onSelected: (language) {
+                    if (language == null) return;
+                    settingsController.update(
+                      (current) => current.copyWith(language: language),
+                    );
+                  },
+                ),
+              ),
+              sectionTitle(strings.settingsAbout),
+              AboutListTile(
+                icon: const Icon(Icons.info_outline),
+                applicationName: strings.appTitle,
+                applicationIcon: const AppLogo(size: 48),
               ),
             ],
           );
@@ -129,5 +149,14 @@ class SettingsScreen extends StatelessWidget {
   }
 }
 
-String _describeDelay(Duration delay) =>
-    delay.inSeconds < 60 ? '${delay.inSeconds} s' : '${delay.inMinutes} min';
+String _describeDelay(AppLocalizations strings, Duration delay) =>
+    delay.inSeconds < 60
+    ? strings.delayInSeconds(delay.inSeconds)
+    : strings.delayInMinutes(delay.inMinutes);
+
+String _languageLabel(AppLocalizations strings, AppLanguage language) =>
+    switch (language) {
+      AppLanguage.phone => strings.followPhone,
+      AppLanguage.english => strings.languageNameEnglish,
+      AppLanguage.french => strings.languageNameFrench,
+    };

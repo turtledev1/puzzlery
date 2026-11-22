@@ -9,6 +9,7 @@ class SettingsController extends ChangeNotifier {
   SettingsController._(this._settings);
 
   static const String _themeModeKey = 'settings.theme_mode';
+  static const String _languageKey = 'settings.language';
   static const String _vibrationEnabledKey = 'settings.vibration_enabled';
   static const String _showRuleErrorsKey = 'settings.show_rule_errors';
   static const String _showLineCountersKey = 'settings.show_line_counters';
@@ -31,6 +32,11 @@ class SettingsController extends ChangeNotifier {
           ThemeMode.values,
           preferences.getString(_themeModeKey),
           defaults.themeMode,
+        ),
+        language: _enumByNameOrDefault(
+          AppLanguage.values,
+          preferences.getString(_languageKey),
+          defaults.language,
         ),
         vibrationEnabled:
             preferences.getBool(_vibrationEnabledKey) ??
@@ -68,6 +74,7 @@ class SettingsController extends ChangeNotifier {
     notifyListeners();
     final preferences = await SharedPreferences.getInstance();
     await preferences.setString(_themeModeKey, _settings.themeMode.name);
+    await preferences.setString(_languageKey, _settings.language.name);
     await preferences.setBool(_vibrationEnabledKey, _settings.vibrationEnabled);
     await preferences.setBool(_showRuleErrorsKey, _settings.showRuleErrors);
     await preferences.setBool(_showLineCountersKey, _settings.showLineCounters);

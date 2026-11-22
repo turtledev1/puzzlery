@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../app/app_services.dart';
 import '../game/game_options.dart';
+import '../l10n/localized_labels.dart';
 import '../statistics/statistics_repository.dart';
 
 class StatisticsScreen extends StatefulWidget {
@@ -39,19 +40,20 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   Future<void> _confirmReset() async {
+    final strings = context.strings;
     final shouldReset = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Reset statistics?'),
-        content: const Text('All solve counts and times will be deleted.'),
+        title: Text(strings.resetStatisticsTitle),
+        content: Text(strings.resetStatisticsMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Cancel'),
+            child: Text(strings.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Reset'),
+            child: Text(strings.reset),
           ),
         ],
       ),
@@ -65,12 +67,13 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   @override
   Widget build(BuildContext context) {
     final statisticsByPuzzleKind = _statisticsByPuzzleKind;
+    final strings = context.strings;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Statistics'),
+        title: Text(strings.statistics),
         actions: [
           IconButton(
-            tooltip: 'Reset statistics',
+            tooltip: strings.resetStatisticsTooltip,
             icon: const Icon(Icons.delete_outline),
             onPressed: _confirmReset,
           ),
@@ -109,6 +112,7 @@ class _DifficultyStatisticsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final strings = context.strings;
     final headerStyle = textTheme.labelMedium?.copyWith(
       color: Theme.of(context).colorScheme.onSurfaceVariant,
     );
@@ -130,11 +134,19 @@ class _DifficultyStatisticsCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(capitalize(difficulty.name), style: textTheme.titleLarge),
+            Text(
+              strings.difficultyName(difficulty),
+              style: textTheme.titleLarge,
+            ),
             const SizedBox(height: 8),
             Table(
               children: [
-                row(['Size', 'Solved', 'Best', 'Average'], style: headerStyle),
+                row([
+                  strings.boardSize,
+                  strings.statisticsSolvedCount,
+                  strings.statisticsBestTime,
+                  strings.statisticsAverageTime,
+                ], style: headerStyle),
                 for (final MapEntry(key: size, value: statistics)
                     in statisticsBySize.entries)
                   row([

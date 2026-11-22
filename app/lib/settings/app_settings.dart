@@ -1,9 +1,20 @@
 import 'package:binairo_core/binairo_core.dart';
 import 'package:flutter/material.dart';
 
+enum AppLanguage {
+  phone(null),
+  english(Locale('en')),
+  french(Locale('fr'));
+
+  const AppLanguage(this.locale);
+
+  final Locale? locale;
+}
+
 class AppSettings {
   const AppSettings({
     this.themeMode = ThemeMode.system,
+    this.language = AppLanguage.phone,
     this.vibrationEnabled = true,
     this.showRuleErrors = true,
     this.showLineCounters = true,
@@ -20,6 +31,7 @@ class AppSettings {
   ];
 
   final ThemeMode themeMode;
+  final AppLanguage language;
   final bool vibrationEnabled;
   final bool showRuleErrors;
   final bool showLineCounters;
@@ -30,6 +42,7 @@ class AppSettings {
 
   AppSettings copyWith({
     ThemeMode? themeMode,
+    AppLanguage? language,
     bool? vibrationEnabled,
     bool? showRuleErrors,
     bool? showLineCounters,
@@ -39,6 +52,7 @@ class AppSettings {
     Duration? autoHintDelay,
   }) => AppSettings(
     themeMode: themeMode ?? this.themeMode,
+    language: language ?? this.language,
     vibrationEnabled: vibrationEnabled ?? this.vibrationEnabled,
     showRuleErrors: showRuleErrors ?? this.showRuleErrors,
     showLineCounters: showLineCounters ?? this.showLineCounters,

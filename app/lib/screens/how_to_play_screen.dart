@@ -1,6 +1,7 @@
 import 'package:binairo_core/binairo_core.dart';
 import 'package:flutter/material.dart';
 
+import '../l10n/localized_labels.dart';
 import '../widgets/board_cell.dart';
 
 class HowToPlayScreen extends StatelessWidget {
@@ -9,42 +10,36 @@ class HowToPlayScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final strings = context.strings;
     return Scaffold(
-      appBar: AppBar(title: const Text('How to play')),
+      appBar: AppBar(title: Text(strings.howToPlay)),
       body: ListView(
         padding:
             const EdgeInsets.all(16) +
             EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
         children: [
-          Text(
-            'Fill every empty cell with a 0 or a 1. '
-            'Each puzzle has exactly one answer, and you can always find it '
-            'with logic. You never need to guess.',
-            style: textTheme.bodyLarge,
-          ),
+          Text(strings.howToPlayIntro, style: textTheme.bodyLarge),
           const SizedBox(height: 16),
-          const _RuleCard(
+          _RuleCard(
             number: 1,
-            title: 'No three in a row',
-            explanation:
-                'Three equal values cannot touch in a row or a column.',
+            title: strings.ruleNoThreeInARowTitle,
+            explanation: strings.ruleNoThreeInARowExplanation,
             goodLine: '001101',
             badLine: '000111',
             badCells: {0, 1, 2, 3, 4, 5},
           ),
-          const _RuleCard(
+          _RuleCard(
             number: 2,
-            title: 'Same number of 0s and 1s',
-            explanation: 'Every row and every column has as many 0s as 1s.',
+            title: strings.ruleBalancedLinesTitle,
+            explanation: strings.ruleBalancedLinesExplanation,
             goodLine: '010011',
             badLine: '011011',
             badCells: {1, 2, 4, 5},
           ),
-          const _RuleCard(
+          _RuleCard(
             number: 3,
-            title: 'No two lines the same',
-            explanation:
-                'Two full rows cannot be equal. Two full columns cannot be equal.',
+            title: strings.ruleUniqueLinesTitle,
+            explanation: strings.ruleUniqueLinesExplanation,
             goodLine: '010011',
             secondGoodLine: '011001',
             badLine: '010011',
@@ -52,38 +47,23 @@ class HowToPlayScreen extends StatelessWidget {
             badCells: {0, 1, 2, 3, 4, 5},
           ),
           const SizedBox(height: 8),
-          Text('Controls', style: textTheme.titleLarge),
+          Text(strings.controlsTitle, style: textTheme.titleLarge),
           const SizedBox(height: 8),
-          const _ControlTip(
+          _ControlTip(
             icon: Icons.touch_app_outlined,
-            text:
-                'Tap an empty cell to put a 0. Tap again for a 1. '
-                'Tap a third time to clear it.',
+            text: strings.controlTapCell,
           ),
-          const _ControlTip(
-            icon: Icons.lock_outline,
-            text: 'Gray cells are clues. You cannot change them.',
-          ),
-          const _ControlTip(
+          _ControlTip(icon: Icons.lock_outline, text: strings.controlClues),
+          _ControlTip(
             icon: Icons.error_outline,
-            text: 'A red ring shows a cell that breaks a rule.',
+            text: strings.controlRuleErrors,
           ),
-          const _ControlTip(
+          _ControlTip(
             icon: Icons.format_list_numbered,
-            text:
-                'The small numbers next to each row and column show how '
-                'many 0s (orange) and 1s (blue) are still missing.',
+            text: strings.controlLineCounters,
           ),
-          const _ControlTip(
-            icon: Icons.lightbulb_outline,
-            text:
-                'Stuck? Tap Hint in the ⋮ menu. A yellow glow shows a cell '
-                'you can figure out with the rules. It never shows the number.',
-          ),
-          const _ControlTip(
-            icon: Icons.undo,
-            text: 'Use Undo to take back your last move.',
-          ),
+          _ControlTip(icon: Icons.lightbulb_outline, text: strings.controlHint),
+          _ControlTip(icon: Icons.undo, text: strings.controlUndo),
         ],
       ),
     );
@@ -123,7 +103,10 @@ class _RuleCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Rule $number · $title', style: textTheme.titleMedium),
+            Text(
+              context.strings.ruleCardTitle(number, title),
+              style: textTheme.titleMedium,
+            ),
             const SizedBox(height: 4),
             Text(explanation, style: textTheme.bodyMedium),
             const SizedBox(height: 16),
@@ -161,7 +144,9 @@ class _ExampleLabel extends StatelessWidget {
           ),
           const SizedBox(width: 6),
           Text(
-            isGood ? 'Correct' : 'Wrong',
+            isGood
+                ? context.strings.exampleCorrect
+                : context.strings.exampleWrong,
             style: TextStyle(color: color, fontWeight: FontWeight.bold),
           ),
         ],

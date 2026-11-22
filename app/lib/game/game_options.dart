@@ -5,6 +5,3 @@ String formatElapsedTime(Duration elapsed) {
   final seconds = (elapsed.inSeconds % 60).toString().padLeft(2, '0');
   return '$minutes:$seconds';
 }
-
-String capitalize(String word) =>
-    word.isEmpty ? word : word[0].toUpperCase() + word.substring(1);

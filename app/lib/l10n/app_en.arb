@@ -1,0 +1,109 @@
+{
+  "@@locale": "en",
+  "appTitle": "Binairo",
+  "homeTagline": "A logic puzzle of zeros and ones",
+  "newGame": "New game",
+  "makingPuzzle": "Making your puzzle…",
+  "howToPlay": "How to play",
+  "statistics": "Statistics",
+  "settings": "Settings",
+  "continueGame": "Continue",
+  "percentFilled": "{percent}%",
+  "@percentFilled": {
+    "placeholders": {
+      "percent": { "type": "int" }
+    }
+  },
+  "replaceSavedGameTitle": "Start a new game?",
+  "replaceSavedGameMessage": "Your unfinished game will be lost.",
+  "replaceSavedGameConfirm": "Start new game",
+  "cancel": "Cancel",
+  "difficultyEasy": "Easy",
+  "difficultyHard": "Hard",
+  "difficultyEasyDescription": "Simple steps only: pairs, gaps and line counts.",
+  "difficultyHardDescription": "You need to look ahead to finish each line.",
+  "boardSize": "Size",
+  "difficultyLevel": "Level",
+  "start": "Start",
+  "wrongCellHint": "The glowing cell does not fit. Change it first.",
+  "solvedTitle": "Solved!",
+  "newBestTime": "New best time: {time}",
+  "@newBestTime": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "solveTime": "Time: {time}",
+  "@solveTime": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "lookAtBoard": "Look at board",
+  "home": "Home",
+  "restartTitle": "Restart puzzle?",
+  "restartMessage": "This clears all your moves.",
+  "restart": "Restart",
+  "hint": "Hint",
+  "undo": "Undo",
+  "menu": "Menu",
+  "howToPlayIntro": "Fill every empty cell with a 0 or a 1. Each puzzle has exactly one answer, and you can always find it with logic. You never need to guess.",
+  "ruleCardTitle": "Rule {number} · {title}",
+  "@ruleCardTitle": {
+    "placeholders": {
+      "number": { "type": "int" },
+      "title": { "type": "String" }
+    }
+  },
+  "ruleNoThreeInARowTitle": "No three in a row",
+  "ruleNoThreeInARowExplanation": "Three equal values cannot touch in a row or a column.",
+  "ruleBalancedLinesTitle": "Same number of 0s and 1s",
+  "ruleBalancedLinesExplanation": "Every row and every column has as many 0s as 1s.",
+  "ruleUniqueLinesTitle": "No two lines the same",
+  "ruleUniqueLinesExplanation": "Two full rows cannot be equal. Two full columns cannot be equal.",
+  "exampleCorrect": "Correct",
+  "exampleWrong": "Wrong",
+  "controlsTitle": "Controls",
+  "controlTapCell": "Tap an empty cell to put a 0. Tap again for a 1. Tap a third time to clear it.",
+  "controlClues": "Gray cells are clues. You cannot change them.",
+  "controlRuleErrors": "A red ring shows a cell that breaks a rule.",
+  "controlLineCounters": "The small numbers next to each row and column show how many 0s (orange) and 1s (blue) are still missing.",
+  "controlHint": "Stuck? Tap Hint in the ⋮ menu. A yellow glow shows a cell you can figure out with the rules. It never shows the number.",
+  "controlUndo": "Use Undo to take back your last move.",
+  "resetStatisticsTitle": "Reset statistics?",
+  "resetStatisticsMessage": "All solve counts and times will be deleted.",
+  "resetStatisticsTooltip": "Reset statistics",
+  "reset": "Reset",
+  "statisticsSolvedCount": "Solved",
+  "statisticsBestTime": "Best",
+  "statisticsAverageTime": "Average",
+  "settingsAppearance": "Appearance",
+  "followPhone": "Phone",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "settingsLanguage": "Language",
+  "languageNameEnglish": "English",
+  "languageNameFrench": "Français",
+  "settingsGame": "Game",
+  "vibration": "Vibration",
+  "vibrationDescription": "Buzz when you tap a cell and when you solve a puzzle",
+  "showRuleErrors": "Show rule errors",
+  "showRuleErrorsDescription": "Red ring on cells that break a rule",
+  "showLineCounters": "Show counters",
+  "showLineCountersDescription": "0s and 1s still missing in each row and column",
+  "autoHint": "Auto-hint",
+  "autoHintDescription": "When you stop for a while, a cell you can figure out glows",
+  "delayInSeconds": "{seconds} s",
+  "@delayInSeconds": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "delayInMinutes": "{minutes} min",
+  "@delayInMinutes": {
+    "placeholders": {
+      "minutes": { "type": "int" }
+    }
+  },
+  "settingsAbout": "About"
+}

@@ -1,3 +1,4 @@
+import 'package:binairo_app/settings/app_settings.dart';
 import 'package:binairo_app/widgets/board_cell.dart';
 import 'package:binairo_app/widgets/celebration.dart';
 import 'package:binairo_app/widgets/hint_pulse.dart';
@@ -302,6 +303,126 @@ void main() {
       tester.widget<MaterialApp>(find.byType(MaterialApp)).themeMode,
       ThemeMode.dark,
     );
+  });
+
+  group('language', () {
+    void setPhoneLanguage(WidgetTester tester, Locale phoneLocale) {
+      tester.platformDispatcher.localesTestValue = [phoneLocale];
+      addTearDown(tester.platformDispatcher.clearLocalesTestValue);
+    }
+
+    Future<void> chooseLanguageInOpenSettings(
+      WidgetTester tester,
+      String languageLabel,
+    ) async {
+      final languageDropdown = find.byKey(const ValueKey('language-dropdown'));
+      await tester.scrollUntilVisible(
+        languageDropdown,
+        100,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.ensureVisible(languageDropdown);
+      await tester.pumpAndSettle();
+      await tester.tap(languageDropdown);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(languageLabel).last);
+      await tester.pumpAndSettle();
+    }
+
+    Future<void> openSettingsAndChooseLanguage(
+      WidgetTester tester, {
+      required String settingsLabel,
+      required String languageLabel,
+    }) async {
+      await tester.tap(find.text(settingsLabel));
+      await tester.pumpAndSettle();
+      await chooseLanguageInOpenSettings(tester, languageLabel);
+    }
+
+    testWidgets('a phone set to French shows the app in French by default', (
+      tester,
+    ) async {
+      setPhoneLanguage(tester, const Locale('fr', 'CA'));
+
+      await pumpBinairoApp(tester);
+
+      expect(find.text('Nouvelle partie'), findsOneWidget);
+      expect(find.text('Comment jouer'), findsOneWidget);
+    });
+
+    testWidgets(
+      'a phone set to a language the app does not have shows English',
+      (tester) async {
+        setPhoneLanguage(tester, const Locale('de', 'DE'));
+
+        await pumpBinairoApp(tester);
+
+        expect(find.text('New game'), findsOneWidget);
+      },
+    );
+
+    testWidgets('choosing Français in settings switches the app to French and '
+        'is remembered', (tester) async {
+      final services = await pumpBinairoApp(tester);
+
+      await openSettingsAndChooseLanguage(
+        tester,
+        settingsLabel: 'Settings',
+        languageLabel: 'Français',
+      );
+
+      expect(find.text('Paramètres'), findsOneWidget);
+      expect(services.settingsController.settings.language, AppLanguage.french);
+    });
+
+    testWidgets(
+      'choosing English in settings wins over a phone set to French',
+      (tester) async {
+        setPhoneLanguage(tester, const Locale('fr', 'CA'));
+        await pumpBinairoApp(tester);
+
+        await openSettingsAndChooseLanguage(
+          tester,
+          settingsLabel: 'Paramètres',
+          languageLabel: 'English',
+        );
+
+        expect(find.text('Settings'), findsOneWidget);
+      },
+    );
+
+    testWidgets('choosing Phone in settings goes back to the phone language', (
+      tester,
+    ) async {
+      setPhoneLanguage(tester, const Locale('fr', 'CA'));
+      await pumpBinairoApp(tester);
+      await openSettingsAndChooseLanguage(
+        tester,
+        settingsLabel: 'Paramètres',
+        languageLabel: 'English',
+      );
+
+      await chooseLanguageInOpenSettings(tester, 'Phone');
+
+      expect(find.text('Paramètres'), findsOneWidget);
+    });
+
+    testWidgets('a game in French shows the level and menu in French', (
+      tester,
+    ) async {
+      setPhoneLanguage(tester, const Locale('fr', 'CA'));
+      await pumpBinairoApp(tester);
+      await tester.tap(find.text('Nouvelle partie'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Commencer'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('4×4 · Facile'), findsOneWidget);
+      await tester.tap(find.byTooltip('Menu'));
+      await tester.pumpAndSettle();
+      expect(find.text('Indice'), findsOneWidget);
+      expect(find.text('Recommencer'), findsOneWidget);
+    });
   });
 
   group('tap feedback', () {

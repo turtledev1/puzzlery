@@ -4,6 +4,7 @@ import '../app/app_services.dart';
 import '../game/game_controller.dart';
 import '../game/game_options.dart';
 import '../game/saved_game_repository.dart';
+import '../l10n/localized_labels.dart';
 import '../widgets/app_logo.dart';
 import '../widgets/new_game_sheet.dart';
 import 'game_screen.dart';
@@ -71,16 +72,16 @@ class _HomeScreenState extends State<HomeScreen> {
     final shouldReplace = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Start a new game?'),
-        content: const Text('Your unfinished game will be lost.'),
+        title: Text(context.strings.replaceSavedGameTitle),
+        content: Text(context.strings.replaceSavedGameMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Cancel'),
+            child: Text(context.strings.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Start new game'),
+            child: Text(context.strings.replaceSavedGameConfirm),
           ),
         ],
       ),
@@ -106,6 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     final savedGame = _savedGame;
+    final strings = context.strings;
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -119,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const Center(child: AppLogo(size: 112)),
                   const SizedBox(height: 24),
                   Text(
-                    'Binairo',
+                    strings.appTitle,
                     textAlign: TextAlign.center,
                     style: textTheme.displaySmall?.copyWith(
                       fontWeight: FontWeight.bold,
@@ -127,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'A logic puzzle of zeros and ones',
+                    strings.homeTagline,
                     textAlign: TextAlign.center,
                     style: textTheme.bodyLarge?.copyWith(
                       color: colorScheme.onSurfaceVariant,
@@ -162,30 +164,33 @@ class _HomeScreenState extends State<HomeScreen> {
                           )
                         : const Icon(Icons.add),
                     label: Text(
-                      _isGenerating ? 'Making your puzzle…' : 'New game',
+                      _isGenerating ? strings.makingPuzzle : strings.newGame,
                     ),
                   ),
                   const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      _HomeShortcut(
-                        icon: Icons.school_outlined,
-                        label: 'How to play',
-                        onTap: () => _openScreen(const HowToPlayScreen()),
-                      ),
-                      const SizedBox(width: 12),
-                      _HomeShortcut(
-                        icon: Icons.bar_chart,
-                        label: 'Statistics',
-                        onTap: () => _openScreen(const StatisticsScreen()),
-                      ),
-                      const SizedBox(width: 12),
-                      _HomeShortcut(
-                        icon: Icons.settings_outlined,
-                        label: 'Settings',
-                        onTap: () => _openScreen(const SettingsScreen()),
-                      ),
-                    ],
+                  IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _HomeShortcut(
+                          icon: Icons.school_outlined,
+                          label: strings.howToPlay,
+                          onTap: () => _openScreen(const HowToPlayScreen()),
+                        ),
+                        const SizedBox(width: 12),
+                        _HomeShortcut(
+                          icon: Icons.bar_chart,
+                          label: strings.statistics,
+                          onTap: () => _openScreen(const StatisticsScreen()),
+                        ),
+                        const SizedBox(width: 12),
+                        _HomeShortcut(
+                          icon: Icons.settings_outlined,
+                          label: strings.settings,
+                          onTap: () => _openScreen(const SettingsScreen()),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -208,6 +213,7 @@ class _ContinueCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final puzzle = savedGame.puzzle;
     final percentFilled = (savedGame.fillProgress * 100).round();
+    final strings = context.strings;
     return Card.filled(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -222,10 +228,10 @@ class _ContinueCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Continue', style: textTheme.titleMedium),
+                    Text(strings.continueGame, style: textTheme.titleMedium),
                     Text(
                       '${puzzle.size}×${puzzle.size} · '
-                      '${capitalize(puzzle.difficulty.name)} · '
+                      '${strings.difficultyName(puzzle.difficulty)} · '
                       '${formatElapsedTime(savedGame.elapsed)}',
                       style: textTheme.bodyMedium,
                     ),
@@ -238,7 +244,10 @@ class _ContinueCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 16),
-              Text('$percentFilled%', style: textTheme.titleMedium),
+              Text(
+                strings.percentFilled(percentFilled),
+                style: textTheme.titleMedium,
+              ),
             ],
           ),
         ),
@@ -268,6 +277,7 @@ class _HomeShortcut extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(icon),
                 const SizedBox(height: 8),

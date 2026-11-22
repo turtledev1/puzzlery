@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../screens/home_screen.dart';
 import 'app_services.dart';
 
@@ -17,7 +18,10 @@ class BinairoApp extends StatelessWidget {
       child: ListenableBuilder(
         listenable: services.settingsController,
         builder: (context, _) => MaterialApp(
-          title: 'Binairo',
+          onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
+          locale: services.settingsController.settings.language.locale,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           themeMode: services.settingsController.settings.themeMode,
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(seedColor: brandColor),

@@ -1,3 +1,4 @@
+import 'package:binairo_app/settings/app_settings.dart';
 import 'package:binairo_app/settings/settings_controller.dart';
 import 'package:binairo_core/binairo_core.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ void main() {
     final settings = (await SettingsController.load()).settings;
 
     expect(settings.themeMode, ThemeMode.system);
+    expect(settings.language, AppLanguage.phone);
     expect(settings.vibrationEnabled, isTrue);
     expect(settings.showRuleErrors, isTrue);
     expect(settings.showLineCounters, isTrue);
@@ -26,6 +28,7 @@ void main() {
     await controller.update(
       (settings) => settings.copyWith(
         themeMode: ThemeMode.dark,
+        language: AppLanguage.french,
         vibrationEnabled: false,
         showRuleErrors: false,
         showLineCounters: false,
@@ -38,6 +41,7 @@ void main() {
     final reloaded = (await SettingsController.load()).settings;
 
     expect(reloaded.themeMode, ThemeMode.dark);
+    expect(reloaded.language, AppLanguage.french);
     expect(reloaded.vibrationEnabled, isFalse);
     expect(reloaded.showRuleErrors, isFalse);
     expect(reloaded.showLineCounters, isFalse);
@@ -62,6 +66,7 @@ void main() {
   test('unknown saved values fall back to the defaults', () async {
     SharedPreferences.setMockInitialValues({
       'settings.theme_mode': 'purple',
+      'settings.language': 'klingon',
       'settings.last_board_size': 7,
       'settings.last_difficulty': 'impossible',
     });
@@ -69,6 +74,7 @@ void main() {
     final settings = (await SettingsController.load()).settings;
 
     expect(settings.themeMode, ThemeMode.system);
+    expect(settings.language, AppLanguage.phone);
     expect(settings.lastBoardSize, 8);
     expect(settings.lastDifficulty, Difficulty.easy);
   });

@@ -8,6 +8,7 @@ import '../app/app_services.dart';
 import '../game/game_controller.dart';
 import '../game/game_options.dart';
 import '../game/saved_game_repository.dart';
+import '../l10n/localized_labels.dart';
 import '../widgets/board_grid.dart';
 import '../widgets/celebration.dart';
 import 'how_to_play_screen.dart';
@@ -102,11 +103,7 @@ class _GameScreenState extends State<GameScreen>
     if (_controller.activeHint is WrongCellHint) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
-        ..showSnackBar(
-          const SnackBar(
-            content: Text('The glowing cell does not fit. Change it first.'),
-          ),
-        );
+        ..showSnackBar(SnackBar(content: Text(context.strings.wrongCellHint)));
     }
   }
 
@@ -145,6 +142,8 @@ class _GameScreenState extends State<GameScreen>
 
   Future<void> _showSolvedDialog(Duration solveTime, bool isNewBestTime) async {
     if (!mounted) return;
+    final strings = context.strings;
+    final formattedSolveTime = formatElapsedTime(solveTime);
     final startNewGame = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -152,21 +151,21 @@ class _GameScreenState extends State<GameScreen>
           isNewBestTime ? Icons.emoji_events : Icons.check_circle,
           size: 48,
         ),
-        title: const Text('Solved!'),
+        title: Text(strings.solvedTitle),
         content: Text(
           isNewBestTime
-              ? 'New best time: ${formatElapsedTime(solveTime)}'
-              : 'Time: ${formatElapsedTime(solveTime)}',
+              ? strings.newBestTime(formattedSolveTime)
+              : strings.solveTime(formattedSolveTime),
           textAlign: TextAlign.center,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Look at board'),
+            child: Text(strings.lookAtBoard),
           ),
           FilledButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Home'),
+            child: Text(strings.home),
           ),
         ],
       ),
@@ -177,19 +176,20 @@ class _GameScreenState extends State<GameScreen>
   }
 
   Future<void> _confirmRestart() async {
+    final strings = context.strings;
     final shouldRestart = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Restart puzzle?'),
-        content: const Text('This clears all your moves.'),
+        title: Text(strings.restartTitle),
+        content: Text(strings.restartMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Cancel'),
+            child: Text(strings.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Restart'),
+            child: Text(strings.restart),
           ),
         ],
       ),
@@ -220,51 +220,53 @@ class _GameScreenState extends State<GameScreen>
   Widget build(BuildContext context) {
     final puzzle = _controller.puzzle;
     final settingsController = AppScope.of(context).settingsController;
+    final strings = context.strings;
     return ListenableBuilder(
       listenable: Listenable.merge([_controller, settingsController]),
       builder: (context, _) => Scaffold(
         appBar: AppBar(
           title: Text(
-            '${puzzle.size}×${puzzle.size} · ${capitalize(puzzle.difficulty.name)}',
+            '${puzzle.size}×${puzzle.size} · '
+            '${strings.difficultyName(puzzle.difficulty)}',
           ),
           actions: [
             IconButton(
-              tooltip: 'Undo',
+              tooltip: strings.undo,
               icon: const Icon(Icons.undo),
               onPressed: _controller.canUndo ? _controller.undo : null,
             ),
             PopupMenuButton<_GameMenuAction>(
-              tooltip: 'Menu',
+              tooltip: strings.menu,
               onSelected: _onMenuSelected,
               itemBuilder: (_) => [
                 PopupMenuItem(
                   value: _GameMenuAction.restart,
                   enabled: _controller.canRestart,
-                  child: const ListTile(
-                    leading: Icon(Icons.restart_alt),
-                    title: Text('Restart'),
+                  child: ListTile(
+                    leading: const Icon(Icons.restart_alt),
+                    title: Text(strings.restart),
                   ),
                 ),
                 PopupMenuItem(
                   value: _GameMenuAction.hint,
                   enabled: !_controller.isSolved,
-                  child: const ListTile(
-                    leading: Icon(Icons.lightbulb_outline),
-                    title: Text('Hint'),
+                  child: ListTile(
+                    leading: const Icon(Icons.lightbulb_outline),
+                    title: Text(strings.hint),
                   ),
                 ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: _GameMenuAction.howToPlay,
                   child: ListTile(
-                    leading: Icon(Icons.school_outlined),
-                    title: Text('How to play'),
+                    leading: const Icon(Icons.school_outlined),
+                    title: Text(strings.howToPlay),
                   ),
                 ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: _GameMenuAction.settings,
                   child: ListTile(
-                    leading: Icon(Icons.settings_outlined),
-                    title: Text('Settings'),
+                    leading: const Icon(Icons.settings_outlined),
+                    title: Text(strings.settings),
                   ),
                 ),
               ],
