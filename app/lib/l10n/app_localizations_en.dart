@@ -9,10 +9,13 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Binairo';
+  String get appTitle => 'Puzzlery';
 
   @override
-  String get homeTagline => 'A logic puzzle of zeros and ones';
+  String get binairoName => 'Binairo';
+
+  @override
+  String get binairoTagline => 'A logic puzzle of zeros and ones';
 
   @override
   String get newGame => 'New game';
@@ -113,8 +116,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get menu => 'Menu';
 
   @override
-  String get howToPlayIntro =>
-      'Fill every empty cell with a 0 or a 1. Each puzzle has exactly one answer, and you can always find it with logic. You never need to guess.';
+  String get howToPlayIntro => 'Fill every empty cell with a 0 or a 1.';
 
   @override
   String ruleCardTitle(int number, String title) {

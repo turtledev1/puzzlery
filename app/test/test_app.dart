@@ -33,6 +33,26 @@ Future<AppServices> pumpPuzzleryApp(
   return services;
 }
 
+Future<AppServices> pumpPuzzleryAppOnBinairoHome(
+  WidgetTester tester, {
+  List<(int, Difficulty)>? requestedPuzzles,
+}) async {
+  final services = await pumpPuzzleryApp(
+    tester,
+    requestedPuzzles: requestedPuzzles,
+  );
+  await openPuzzleFromPicker(tester, 'binairo');
+  return services;
+}
+
+Future<void> openPuzzleFromPicker(
+  WidgetTester tester,
+  String puzzleName,
+) async {
+  await tester.tap(find.byKey(ValueKey('puzzle-card-$puzzleName')));
+  await tester.pumpAndSettle();
+}
+
 Future<void> startNewGameFromHome(
   WidgetTester tester, {
   String? sizeLabel,

@@ -9,10 +9,13 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
-  String get appTitle => 'Binairo';
+  String get appTitle => 'Puzzlery';
 
   @override
-  String get homeTagline => 'Un casse-tête logique de zéros et de uns';
+  String get binairoName => 'Binairo';
+
+  @override
+  String get binairoTagline => 'Un casse-tête logique de zéros et de uns';
 
   @override
   String get newGame => 'Nouvelle partie';
@@ -114,8 +117,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get menu => 'Menu';
 
   @override
-  String get howToPlayIntro =>
-      'Remplissez chaque case vide avec un 0 ou un 1. Chaque grille a une seule solution, et vous pouvez toujours la trouver par la logique. Vous n\'avez jamais besoin de deviner.';
+  String get howToPlayIntro => 'Remplissez chaque case vide avec un 0 ou un 1.';
 
   @override
   String ruleCardTitle(int number, String title) {

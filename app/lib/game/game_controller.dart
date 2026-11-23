@@ -1,6 +1,8 @@
 import 'package:binairo_core/binairo_core.dart';
 import 'package:flutter/foundation.dart';
 
+import 'saved_game_repository.dart';
+
 class GameController extends ChangeNotifier {
   GameController({
     required this.puzzle,
@@ -12,6 +14,12 @@ class GameController extends ChangeNotifier {
       _sessionStopwatch.start();
     }
   }
+
+  factory GameController.resume(SavedGame savedGame) => GameController(
+    puzzle: savedGame.puzzle,
+    currentBoard: savedGame.currentBoard,
+    elapsedBeforeThisSession: savedGame.elapsed,
+  );
 
   final Puzzle puzzle;
   final List<Board> _previousBoards = [];

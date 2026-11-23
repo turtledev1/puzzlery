@@ -1,6 +1,7 @@
 import 'package:binairo_core/binairo_core.dart';
 import 'package:flutter/widgets.dart';
 
+import '../puzzles/puzzle_kind.dart';
 import 'app_localizations.dart';
 
 extension LocalizedStrings on BuildContext {
@@ -16,5 +17,15 @@ extension DifficultyLabels on AppLocalizations {
   String difficultyDescription(Difficulty difficulty) => switch (difficulty) {
     Difficulty.easy => difficultyEasyDescription,
     Difficulty.hard => difficultyHardDescription,
+  };
+}
+
+extension PuzzleKindLabels on AppLocalizations {
+  String puzzleName(PuzzleKind puzzleKind) => switch (puzzleKind) {
+    PuzzleKind.binairo => binairoName,
+  };
+
+  String puzzleTagline(PuzzleKind puzzleKind) => switch (puzzleKind) {
+    PuzzleKind.binairo => binairoTagline,
   };
 }

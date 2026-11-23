@@ -2,24 +2,25 @@ import 'package:flutter/material.dart';
 
 import '../app/app_services.dart';
 import '../game/game_controller.dart';
-import '../game/game_options.dart';
 import '../game/saved_game_repository.dart';
 import '../l10n/localized_labels.dart';
+import '../puzzles/puzzle_kind.dart';
 import '../widgets/app_logo.dart';
+import '../widgets/continue_card.dart';
 import '../widgets/new_game_sheet.dart';
 import 'game_screen.dart';
 import 'how_to_play_screen.dart';
 import 'settings_screen.dart';
 import 'statistics_screen.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class BinairoHomeScreen extends StatefulWidget {
+  const BinairoHomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<BinairoHomeScreen> createState() => _BinairoHomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _BinairoHomeScreenState extends State<BinairoHomeScreen> {
   late AppServices _services;
   SavedGame? _savedGame;
   bool _isGenerating = false;
@@ -109,6 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final savedGame = _savedGame;
     final strings = context.strings;
     return Scaffold(
+      appBar: AppBar(),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -121,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const Center(child: AppLogo(size: 112)),
                   const SizedBox(height: 24),
                   Text(
-                    strings.appTitle,
+                    strings.puzzleName(PuzzleKind.binairo),
                     textAlign: TextAlign.center,
                     style: textTheme.displaySmall?.copyWith(
                       fontWeight: FontWeight.bold,
@@ -129,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    strings.homeTagline,
+                    strings.puzzleTagline(PuzzleKind.binairo),
                     textAlign: TextAlign.center,
                     style: textTheme.bodyLarge?.copyWith(
                       color: colorScheme.onSurfaceVariant,
@@ -137,17 +139,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 48),
                   if (savedGame != null) ...[
-                    _ContinueCard(
+                    ContinueCard(
                       savedGame: savedGame,
                       onTap: _isGenerating
                           ? null
-                          : () => _openGame(
-                              GameController(
-                                puzzle: savedGame.puzzle,
-                                currentBoard: savedGame.currentBoard,
-                                elapsedBeforeThisSession: savedGame.elapsed,
-                              ),
-                            ),
+                          : () => _openGame(GameController.resume(savedGame)),
                     ),
                     const SizedBox(height: 16),
                   ],
@@ -195,60 +191,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ContinueCard extends StatelessWidget {
-  const _ContinueCard({required this.savedGame, required this.onTap});
-
-  final SavedGame savedGame;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final puzzle = savedGame.puzzle;
-    final percentFilled = (savedGame.fillProgress * 100).round();
-    final strings = context.strings;
-    return Card.filled(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              const Icon(Icons.play_circle_fill, size: 40),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(strings.continueGame, style: textTheme.titleMedium),
-                    Text(
-                      '${puzzle.size}×${puzzle.size} · '
-                      '${strings.difficultyName(puzzle.difficulty)} · '
-                      '${formatElapsedTime(savedGame.elapsed)}',
-                      style: textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 8),
-                    LinearProgressIndicator(
-                      value: savedGame.fillProgress,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              Text(
-                strings.percentFilled(percentFilled),
-                style: textTheme.titleMedium,
-              ),
-            ],
           ),
         ),
       ),

@@ -101,14 +101,20 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Binairo'**
+  /// **'Puzzlery'**
   String get appTitle;
 
-  /// No description provided for @homeTagline.
+  /// No description provided for @binairoName.
+  ///
+  /// In en, this message translates to:
+  /// **'Binairo'**
+  String get binairoName;
+
+  /// No description provided for @binairoTagline.
   ///
   /// In en, this message translates to:
   /// **'A logic puzzle of zeros and ones'**
-  String get homeTagline;
+  String get binairoTagline;
 
   /// No description provided for @newGame.
   ///
@@ -293,7 +299,7 @@ abstract class AppLocalizations {
   /// No description provided for @howToPlayIntro.
   ///
   /// In en, this message translates to:
-  /// **'Fill every empty cell with a 0 or a 1. Each puzzle has exactly one answer, and you can always find it with logic. You never need to guess.'**
+  /// **'Fill every empty cell with a 0 or a 1.'**
   String get howToPlayIntro;
 
   /// No description provided for @ruleCardTitle.

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
-import '../screens/home_screen.dart';
+import '../screens/puzzle_picker_screen.dart';
 import 'app_services.dart';
 
 class PuzzleryApp extends StatelessWidget {
@@ -32,7 +32,7 @@ class PuzzleryApp extends StatelessWidget {
               brightness: Brightness.dark,
             ),
           ),
-          home: const HomeScreen(),
+          home: const PuzzlePickerScreen(),
         ),
       ),
     );

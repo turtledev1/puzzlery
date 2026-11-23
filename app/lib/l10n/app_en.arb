@@ -1,7 +1,8 @@
 {
   "@@locale": "en",
-  "appTitle": "Binairo",
-  "homeTagline": "A logic puzzle of zeros and ones",
+  "appTitle": "Puzzlery",
+  "binairoName": "Binairo",
+  "binairoTagline": "A logic puzzle of zeros and ones",
   "newGame": "New game",
   "makingPuzzle": "Making your puzzle…",
   "howToPlay": "How to play",
@@ -47,7 +48,7 @@
   "hint": "Hint",
   "undo": "Undo",
   "menu": "Menu",
-  "howToPlayIntro": "Fill every empty cell with a 0 or a 1. Each puzzle has exactly one answer, and you can always find it with logic. You never need to guess.",
+  "howToPlayIntro": "Fill every empty cell with a 0 or a 1.",
   "ruleCardTitle": "Rule {number} · {title}",
   "@ruleCardTitle": {
     "placeholders": {

@@ -1,7 +1,6 @@
 # Puzzlery
 
 A collection of logic puzzles for Android and iOS.
-Every puzzle has exactly one answer, which you can always reach by logic without guessing.
 
 Puzzles: Binairo (also called Takuzu). More are planned.
 
