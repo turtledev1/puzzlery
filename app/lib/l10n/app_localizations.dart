@@ -553,6 +553,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'About'**
   String get settingsAbout;
+
+  /// No description provided for @puzzleSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{puzzle} settings'**
+  String puzzleSettingsTitle(String puzzle);
+
+  /// No description provided for @allSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'All settings'**
+  String get allSettings;
+
+  /// No description provided for @allSettingsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance, vibration, auto-hint and language'**
+  String get allSettingsDescription;
 }
 
 class _AppLocalizationsDelegate

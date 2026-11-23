@@ -10,7 +10,6 @@ import '../widgets/continue_card.dart';
 import 'binairo_home_screen.dart';
 import 'game_screen.dart';
 import 'settings_screen.dart';
-import 'statistics_screen.dart';
 
 class PuzzlePickerScreen extends StatefulWidget {
   const PuzzlePickerScreen({super.key});
@@ -64,11 +63,6 @@ class _PuzzlePickerScreenState extends State<PuzzlePickerScreen> {
           style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         actions: [
-          IconButton(
-            tooltip: strings.statistics,
-            icon: const Icon(Icons.bar_chart),
-            onPressed: () => _openScreenThenRefresh(const StatisticsScreen()),
-          ),
           IconButton(
             tooltip: strings.settings,
             icon: const Icon(Icons.settings_outlined),

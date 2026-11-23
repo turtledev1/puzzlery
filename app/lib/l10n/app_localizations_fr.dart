@@ -264,4 +264,16 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settingsAbout => 'À propos';
+
+  @override
+  String puzzleSettingsTitle(String puzzle) {
+    return 'Paramètres de $puzzle';
+  }
+
+  @override
+  String get allSettings => 'Tous les paramètres';
+
+  @override
+  String get allSettingsDescription =>
+      'Apparence, vibration, indice automatique et langue';
 }

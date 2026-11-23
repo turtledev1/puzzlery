@@ -69,22 +69,6 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ),
               SwitchListTile(
-                title: Text(strings.showRuleErrors),
-                subtitle: Text(strings.showRuleErrorsDescription),
-                value: settings.showRuleErrors,
-                onChanged: (enabled) => settingsController.update(
-                  (current) => current.copyWith(showRuleErrors: enabled),
-                ),
-              ),
-              SwitchListTile(
-                title: Text(strings.showLineCounters),
-                subtitle: Text(strings.showLineCountersDescription),
-                value: settings.showLineCounters,
-                onChanged: (enabled) => settingsController.update(
-                  (current) => current.copyWith(showLineCounters: enabled),
-                ),
-              ),
-              SwitchListTile(
                 title: Text(strings.autoHint),
                 subtitle: Text(strings.autoHintDescription),
                 value: settings.autoHintEnabled,

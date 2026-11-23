@@ -10,7 +10,7 @@ import '../widgets/continue_card.dart';
 import '../widgets/new_game_sheet.dart';
 import 'game_screen.dart';
 import 'how_to_play_screen.dart';
-import 'settings_screen.dart';
+import 'binairo_settings_screen.dart';
 import 'statistics_screen.dart';
 
 class BinairoHomeScreen extends StatefulWidget {
@@ -183,7 +183,8 @@ class _BinairoHomeScreenState extends State<BinairoHomeScreen> {
                         _HomeShortcut(
                           icon: Icons.settings_outlined,
                           label: strings.settings,
-                          onTap: () => _openScreen(const SettingsScreen()),
+                          onTap: () =>
+                              _openScreen(const BinairoSettingsScreen()),
                         ),
                       ],
                     ),

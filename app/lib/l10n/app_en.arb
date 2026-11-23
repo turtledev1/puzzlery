@@ -106,5 +106,13 @@
       "minutes": { "type": "int" }
     }
   },
-  "settingsAbout": "About"
+  "settingsAbout": "About",
+  "puzzleSettingsTitle": "{puzzle} settings",
+  "@puzzleSettingsTitle": {
+    "placeholders": {
+      "puzzle": { "type": "String" }
+    }
+  },
+  "allSettings": "All settings",
+  "allSettingsDescription": "Appearance, vibration, auto-hint and language"
 }

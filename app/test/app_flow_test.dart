@@ -14,15 +14,15 @@ void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
   group('puzzle picker', () {
-    testWidgets('the first screen shows the app name, a Binairo card, '
-        'statistics and settings, and no continue card', (tester) async {
+    testWidgets('the first screen shows the app name, a Binairo card and '
+        'settings, but no statistics and no continue card', (tester) async {
       await pumpPuzzleryApp(tester);
 
       expect(find.text('Puzzlery'), findsOneWidget);
       expect(find.text('Binairo'), findsOneWidget);
       expect(find.text('A logic puzzle of zeros and ones'), findsOneWidget);
-      expect(find.byTooltip('Statistics'), findsOneWidget);
       expect(find.byTooltip('Settings'), findsOneWidget);
+      expect(find.byTooltip('Statistics'), findsNothing);
       expect(find.text('Continue'), findsNothing);
     });
 
@@ -39,21 +39,17 @@ void main() {
       expect(find.text('New game'), findsNothing);
     });
 
-    testWidgets('the top bar buttons open statistics and settings', (
-      tester,
-    ) async {
+    testWidgets('the top bar settings button opens the shared settings '
+        'without the Binairo-only ones', (tester) async {
       await pumpPuzzleryApp(tester);
 
-      for (final (tooltip, textOnScreen) in [
-        ('Statistics', 'Average'),
-        ('Settings', 'Show rule errors'),
-      ]) {
-        await tester.tap(find.byTooltip(tooltip));
-        await tester.pumpAndSettle();
-        expect(find.textContaining(textOnScreen), findsWidgets);
-        await tester.pageBack();
-        await tester.pumpAndSettle();
-      }
+      await tester.tap(find.byTooltip('Settings'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Vibration'), findsOneWidget);
+      expect(find.text('Auto-hint'), findsOneWidget);
+      expect(find.text('Show rule errors'), findsNothing);
+      expect(find.text('Show counters'), findsNothing);
     });
 
     testWidgets('a game left unfinished shows on the picker as a Binairo '
@@ -99,6 +95,33 @@ void main() {
 
       expect(find.text('Puzzlery'), findsOneWidget);
       expect(find.text('Continue'), findsNothing);
+    });
+  });
+
+  group('binairo settings', () {
+    testWidgets('Binairo settings have only the Binairo switches '
+        'and a link to all settings', (tester) async {
+      await pumpPuzzleryAppOnBinairoHome(tester);
+
+      await tester.tap(find.text('Settings'));
+      await tester.pumpAndSettle();
+      expect(find.text('Binairo settings'), findsOneWidget);
+      expect(find.text('Show rule errors'), findsOneWidget);
+      expect(find.text('Show counters'), findsOneWidget);
+      expect(find.text('Vibration'), findsNothing);
+
+      await tester.tap(find.text('All settings'));
+      await tester.pumpAndSettle();
+      expect(find.text('Vibration'), findsOneWidget);
+    });
+
+    testWidgets('the game menu opens the Binairo settings', (tester) async {
+      await pumpPuzzleryAppOnBinairoHome(tester);
+      await startNewGameFromHome(tester);
+
+      await openGameMenuItem(tester, 'Settings');
+
+      expect(find.text('Binairo settings'), findsOneWidget);
     });
   });
 
@@ -384,8 +407,8 @@ void main() {
   testWidgets('choosing dark theme in settings changes the app theme', (
     tester,
   ) async {
-    await pumpPuzzleryAppOnBinairoHome(tester);
-    await tester.tap(find.text('Settings'));
+    await pumpPuzzleryApp(tester);
+    await tester.tap(find.byTooltip('Settings'));
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Dark'));
@@ -426,7 +449,7 @@ void main() {
       required String settingsLabel,
       required String languageLabel,
     }) async {
-      await tester.tap(find.text(settingsLabel));
+      await tester.tap(find.byTooltip(settingsLabel));
       await tester.pumpAndSettle();
       await chooseLanguageInOpenSettings(tester, languageLabel);
     }
@@ -455,7 +478,7 @@ void main() {
 
     testWidgets('choosing Français in settings switches the app to French and '
         'is remembered', (tester) async {
-      final services = await pumpPuzzleryAppOnBinairoHome(tester);
+      final services = await pumpPuzzleryApp(tester);
 
       await openSettingsAndChooseLanguage(
         tester,
@@ -471,7 +494,7 @@ void main() {
       'choosing English in settings wins over a phone set to French',
       (tester) async {
         setPhoneLanguage(tester, const Locale('fr', 'CA'));
-        await pumpPuzzleryAppOnBinairoHome(tester);
+        await pumpPuzzleryApp(tester);
 
         await openSettingsAndChooseLanguage(
           tester,
@@ -487,7 +510,7 @@ void main() {
       tester,
     ) async {
       setPhoneLanguage(tester, const Locale('fr', 'CA'));
-      await pumpPuzzleryAppOnBinairoHome(tester);
+      await pumpPuzzleryApp(tester);
       await openSettingsAndChooseLanguage(
         tester,
         settingsLabel: 'Paramètres',

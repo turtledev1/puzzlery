@@ -75,5 +75,8 @@
   "autoHintDescription": "Quand vous arrêtez un moment, une case que vous pouvez trouver s'illumine",
   "delayInSeconds": "{seconds} s",
   "delayInMinutes": "{minutes} min",
-  "settingsAbout": "À propos"
+  "settingsAbout": "À propos",
+  "puzzleSettingsTitle": "Paramètres de {puzzle}",
+  "allSettings": "Tous les paramètres",
+  "allSettingsDescription": "Apparence, vibration, indice automatique et langue"
 }

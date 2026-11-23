@@ -12,7 +12,7 @@ import '../l10n/localized_labels.dart';
 import '../widgets/board_grid.dart';
 import '../widgets/celebration.dart';
 import 'how_to_play_screen.dart';
-import 'settings_screen.dart';
+import 'binairo_settings_screen.dart';
 
 enum _GameMenuAction { restart, hint, howToPlay, settings }
 
@@ -210,9 +210,11 @@ class _GameScreenState extends State<GameScreen>
           MaterialPageRoute<void>(builder: (_) => const HowToPlayScreen()),
         );
       case _GameMenuAction.settings:
-        Navigator.of(
-          context,
-        ).push(MaterialPageRoute<void>(builder: (_) => const SettingsScreen()));
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (_) => const BinairoSettingsScreen(),
+          ),
+        );
     }
   }
 

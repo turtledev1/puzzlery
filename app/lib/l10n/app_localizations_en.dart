@@ -259,4 +259,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsAbout => 'About';
+
+  @override
+  String puzzleSettingsTitle(String puzzle) {
+    return '$puzzle settings';
+  }
+
+  @override
+  String get allSettings => 'All settings';
+
+  @override
+  String get allSettingsDescription =>
+      'Appearance, vibration, auto-hint and language';
 }
