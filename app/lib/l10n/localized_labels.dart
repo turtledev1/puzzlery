@@ -16,22 +16,11 @@ extension DifficultyLabels on AppLocalizations {
         binairo.Difficulty.hard => difficultyHard,
       };
 
-  String binairoDifficultyDescription(binairo.Difficulty difficulty) =>
-      switch (difficulty) {
-        binairo.Difficulty.easy => binairoDifficultyEasyDescription,
-        binairo.Difficulty.hard => binairoDifficultyHardDescription,
-      };
-
   String sudokuDifficultyName(sudoku.Difficulty difficulty) =>
       switch (difficulty) {
         sudoku.Difficulty.easy => difficultyEasy,
+        sudoku.Difficulty.medium => difficultyMedium,
         sudoku.Difficulty.hard => difficultyHard,
-      };
-
-  String sudokuDifficultyDescription(sudoku.Difficulty difficulty) =>
-      switch (difficulty) {
-        sudoku.Difficulty.easy => sudokuDifficultyEasyDescription,
-        sudoku.Difficulty.hard => sudokuDifficultyHardDescription,
       };
 }
 

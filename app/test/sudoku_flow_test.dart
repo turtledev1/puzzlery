@@ -39,8 +39,10 @@ void main() {
       expect(find.text('Settings'), findsOneWidget);
     });
 
-    testWidgets('the new game sheet offers the Sudoku sizes, and the choice '
-        'is remembered for Sudoku only', (tester) async {
+    testWidgets('the new game sheet offers the Sudoku sizes and three levels '
+        'without descriptions, and the choice is remembered for Sudoku only', (
+      tester,
+    ) async {
       final requestedPuzzles = <(int, sudoku.Difficulty)>[];
       final services = await pumpPuzzleryAppOnSudokuHome(
         tester,
@@ -53,7 +55,10 @@ void main() {
       expect(find.text('6×6'), findsOneWidget);
       expect(find.text('9×9'), findsOneWidget);
       expect(find.text('12×12'), findsNothing);
-      expect(find.textContaining('one digit left'), findsOneWidget);
+      expect(find.text('Easy'), findsOneWidget);
+      expect(find.text('Medium'), findsOneWidget);
+      expect(find.text('Hard'), findsOneWidget);
+      expect(find.textContaining('one digit left'), findsNothing);
       await tester.tap(find.text('6×6'));
       await tester.tap(find.text('Hard'));
       await tester.pump();
@@ -81,7 +86,7 @@ void main() {
 
       await tester.tap(find.text('Statistics'));
       await tester.pumpAndSettle();
-      expect(find.text('9×9'), findsNWidgets(2));
+      expect(find.text('9×9'), findsNWidgets(3));
       expect(find.text('12×12'), findsNothing);
       await tester.pageBack();
       await tester.pumpAndSettle();
@@ -129,6 +134,60 @@ void main() {
       await tapCell(tester, 0, 0);
       expect(isButtonEnabled(tester, 'digit-button-1'), isTrue);
       expect(isButtonEnabled(tester, 'erase-button'), isTrue);
+    });
+
+    testWidgets('tapping beside the board removes the selection', (
+      tester,
+    ) async {
+      await pumpPuzzleryAppOnSudokuHome(tester);
+      await startNewGameFromHome(tester);
+      await tapCell(tester, 0, 0);
+
+      await tester.tapAt(
+        tester.getTopLeft(find.byKey(const ValueKey('area-around-board'))) +
+            const Offset(4, 4),
+      );
+      await tester.pump();
+
+      expect(sudokuCell(tester, 0, 0).highlight, SudokuCellHighlight.none);
+      expect(isButtonEnabled(tester, 'digit-button-1'), isFalse);
+    });
+
+    testWidgets('clue digits and player digits differ in color and weight, '
+        'and clue cells have their own background', (tester) async {
+      await pumpPuzzleryAppOnSudokuHome(tester);
+      await startNewGameFromHome(tester);
+      await enterSudokuDigit(tester, 0, 0, 1);
+      await tapCell(tester, 3, 3);
+      await tapSudokuPadButton(tester, 'notes-button');
+      await tapSudokuPadButton(tester, 'digit-button-2');
+      await tester.tap(find.byKey(const ValueKey('area-around-board')));
+      await tester.pump();
+
+      TextStyle styleOfText(int row, int column, String text) => tester
+          .widget<Text>(
+            find.descendant(
+              of: find.byKey(ValueKey('cell-$row-$column')),
+              matching: find.text(text),
+            ),
+          )
+          .style!;
+      Color backgroundOf(int row, int column) => tester
+          .widget<ColoredBox>(
+            find.descendant(
+              of: find.byKey(ValueKey('cell-$row-$column')),
+              matching: find.byType(ColoredBox),
+            ),
+          )
+          .color;
+
+      final clueStyle = styleOfText(0, 1, '2');
+      final playerStyle = styleOfText(0, 0, '1');
+      final noteStyle = styleOfText(3, 3, '2');
+      expect(playerStyle.color, isNot(clueStyle.color));
+      expect(playerStyle.fontWeight, isNot(clueStyle.fontWeight));
+      expect(noteStyle.color, playerStyle.color);
+      expect(backgroundOf(0, 1), isNot(backgroundOf(0, 0)));
     });
 
     testWidgets('the pad has one digit per number on the board', (

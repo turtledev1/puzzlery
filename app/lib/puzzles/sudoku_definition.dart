@@ -74,7 +74,6 @@ class SudokuDefinition extends PuzzleDefinition {
       initialSize: settingsController.settings.sudokuLastBoardSize,
       initialDifficulty: settingsController.settings.sudokuLastDifficulty,
       difficultyName: strings.sudokuDifficultyName,
-      difficultyDescription: strings.sudokuDifficultyDescription,
     );
     if (choice == null) return null;
     settingsController.update(
@@ -102,11 +101,16 @@ class SudokuDefinition extends PuzzleDefinition {
     return Column(
       children: [
         Expanded(
-          child: Center(
-            child: SudokuBoardGrid(
-              controller: controller,
-              celebration: celebration,
-              showRuleErrors: settings.sudokuShowRuleErrors,
+          child: GestureDetector(
+            key: const ValueKey('area-around-board'),
+            behavior: HitTestBehavior.opaque,
+            onTap: controller.clearSelection,
+            child: Center(
+              child: SudokuBoardGrid(
+                controller: controller,
+                celebration: celebration,
+                showRuleErrors: settings.sudokuShowRuleErrors,
+              ),
             ),
           ),
         ),

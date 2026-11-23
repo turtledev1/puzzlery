@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'board.dart';
 import 'deduction_engine.dart';
+import 'deduction_rule.dart';
 import 'difficulty.dart';
 import 'solution_grid_generator.dart';
 
@@ -36,8 +37,12 @@ class PuzzleGenerator {
       attempt++
     ) {
       lastPuzzle = _generateOnce(size, difficulty);
-      if (difficulty == Difficulty.easy ||
-          !_canSolveWith(size, lastPuzzle.givenBoard.cells, Difficulty.easy)) {
+      if (difficulty.needsMoreThan.isEmpty ||
+          !_canSolveWith(
+            size,
+            lastPuzzle.givenBoard.cells,
+            difficulty.needsMoreThan,
+          )) {
         return lastPuzzle;
       }
     }
@@ -52,13 +57,22 @@ class PuzzleGenerator {
       (index) => index,
     )..shuffle(_random);
 
+    final removedCellIndexes = <int>[];
     for (final cellIndex in cellIndexesInRemovalOrder) {
       final removedDigit = givenCellValues[cellIndex];
       givenCellValues[cellIndex] = Board.emptyValue;
-      if (!_canSolveWith(size, givenCellValues, difficulty)) {
+      if (_canSolveWith(size, givenCellValues, difficulty.allowedRules)) {
+        removedCellIndexes.add(cellIndex);
+      } else {
         givenCellValues[cellIndex] = removedDigit;
       }
     }
+    _addCluesBackUntilMinimumShare(
+      givenCellValues,
+      solutionBoard,
+      removedCellIndexes,
+      difficulty.minimumClueShare,
+    );
 
     return Puzzle(
       difficulty: difficulty,
@@ -67,12 +81,30 @@ class PuzzleGenerator {
     );
   }
 
-  bool _canSolveWith(int size, List<int> cellValues, Difficulty difficulty) {
-    final engine = DeductionEngine(
-      size,
-      List.of(cellValues),
-      difficulty.allowedRules,
-    );
+  /// Adding a clue never blocks a deduction, so the puzzle stays solvable at
+  /// its level.
+  void _addCluesBackUntilMinimumShare(
+    List<int> givenCellValues,
+    Board solutionBoard,
+    List<int> removedCellIndexes,
+    double minimumClueShare,
+  ) {
+    final minimumClueCount = (givenCellValues.length * minimumClueShare).ceil();
+    var clueCount = givenCellValues.length - removedCellIndexes.length;
+    removedCellIndexes.shuffle(_random);
+    for (final cellIndex in removedCellIndexes) {
+      if (clueCount >= minimumClueCount) return;
+      givenCellValues[cellIndex] = solutionBoard.cells[cellIndex];
+      clueCount++;
+    }
+  }
+
+  bool _canSolveWith(
+    int size,
+    List<int> cellValues,
+    Set<DeductionRule> allowedRules,
+  ) {
+    final engine = DeductionEngine(size, List.of(cellValues), allowedRules);
     return engine.deduceUntilStuck() && engine.isComplete;
   }
 }

@@ -29,15 +29,34 @@ class SudokuBoardCell extends StatelessWidget {
   final SudokuCellHighlight highlight;
   final VoidCallback? onTap;
 
-  static Color _backgroundColorOf(
-    ColorScheme colorScheme,
-    SudokuCellHighlight highlight,
-  ) => switch (highlight) {
-    SudokuCellHighlight.none => colorScheme.surfaceContainerLowest,
-    SudokuCellHighlight.peerOfSelected => colorScheme.surfaceContainerHighest,
-    SudokuCellHighlight.sameDigitAsSelected => colorScheme.secondaryContainer,
-    SudokuCellHighlight.selected => colorScheme.primaryContainer,
-  };
+  static const Color _playerDigitColorOnDark = Color(0xFF5DA9FF);
+  static const Color _playerDigitColorOnLight = Color(0xFF1A5FD0);
+
+  static Color playerDigitColorFor(Brightness brightness) =>
+      brightness == Brightness.dark
+      ? _playerDigitColorOnDark
+      : _playerDigitColorOnLight;
+
+  Color _backgroundColor(ColorScheme colorScheme) {
+    final baseColor = isGiven
+        ? colorScheme.surfaceContainerHigh
+        : colorScheme.surfaceContainerLowest;
+    final highlightColor = switch (highlight) {
+      SudokuCellHighlight.none => null,
+      SudokuCellHighlight.peerOfSelected => colorScheme.onSurface.withValues(
+        alpha: 0.08,
+      ),
+      SudokuCellHighlight.sameDigitAsSelected => colorScheme.primary.withValues(
+        alpha: 0.22,
+      ),
+      SudokuCellHighlight.selected => colorScheme.primary.withValues(
+        alpha: 0.4,
+      ),
+    };
+    return highlightColor == null
+        ? baseColor
+        : Color.alphaBlend(highlightColor, baseColor);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +65,7 @@ class SudokuBoardCell extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: ColoredBox(
-        color: _backgroundColorOf(colorScheme, highlight),
+        color: _backgroundColor(colorScheme),
         child: Container(
           margin: EdgeInsets.all(isInViolation ? 2 : 0),
           decoration: BoxDecoration(
@@ -73,8 +92,10 @@ class SudokuBoardCell extends StatelessWidget {
       child: Text(
         '$digit',
         style: TextStyle(
-          color: isGiven ? colorScheme.onSurface : colorScheme.primary,
-          fontWeight: isGiven ? FontWeight.w800 : FontWeight.w500,
+          color: isGiven
+              ? colorScheme.onSurface
+              : playerDigitColorFor(colorScheme.brightness),
+          fontWeight: isGiven ? FontWeight.w800 : FontWeight.w600,
         ),
       ),
     ),
@@ -118,7 +139,11 @@ class SudokuBoardCell extends StatelessWidget {
     return FittedBox(
       child: Text(
         '$noteDigit',
-        style: TextStyle(color: colorScheme.onSurfaceVariant, height: 1),
+        style: TextStyle(
+          color: playerDigitColorFor(colorScheme.brightness),
+          fontWeight: FontWeight.w600,
+          height: 1,
+        ),
       ),
     );
   }

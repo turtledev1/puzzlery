@@ -131,6 +131,15 @@ void main() {
     expect(controller.currentState.notedDigitsAt(0, 0), [2]);
   });
 
+  test('clearing the selection turns the digits off', () {
+    controller.selectCell(0, 0);
+
+    controller.clearSelection();
+
+    expect(controller.selectedCell, isNull);
+    expect(controller.canEditSelectedCell, isFalse);
+  });
+
   test('selecting a cell or switching notes mode is not a move', () {
     controller.selectCell(0, 0);
     controller.toggleNotesMode();

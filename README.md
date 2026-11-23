@@ -22,7 +22,7 @@ All are members of one [Dart pub workspace](https://dart.dev/tools/pub/workspace
 Every deduction is forced, so a board the solver finishes has exactly one solution.
 Binairo: Easy uses pairs, gaps and line counts. Hard adds line lookahead and duplicate-line elimination, and must need them.
 
-Sudoku: Easy uses hidden and naked singles. Hard adds locked candidates, naked and hidden pairs and triples, and X-Wing, and must need them.
+Sudoku: Easy and Medium use hidden and naked singles; Easy adds clues back until at least 45% of the cells are clues. Hard adds locked candidates, naked and hidden pairs and triples, and X-Wing, and must need them.
 
 ## Commands
 

@@ -5,7 +5,7 @@ import 'package:sudoku_core/sudoku_core.dart';
 
 const String usage =
     'Usage: dart run sudoku_core:generate_puzzle '
-    '[--size 9] [--difficulty easy|hard] [--seed 42]';
+    '[--size 9] [--difficulty easy|medium|hard] [--seed 42]';
 
 void main(List<String> arguments) {
   final Map<String, String> options;

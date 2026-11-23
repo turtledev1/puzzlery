@@ -15,7 +15,6 @@ showNewGameSheet<DifficultyType extends Enum>(
   required int initialSize,
   required DifficultyType initialDifficulty,
   required String Function(DifficultyType difficulty) difficultyName,
-  required String Function(DifficultyType difficulty) difficultyDescription,
 }) => showModalBottomSheet<NewGameChoice<DifficultyType>>(
   context: context,
   showDragHandle: true,
@@ -26,7 +25,6 @@ showNewGameSheet<DifficultyType extends Enum>(
     initialSize: initialSize,
     initialDifficulty: initialDifficulty,
     difficultyName: difficultyName,
-    difficultyDescription: difficultyDescription,
   ),
 );
 
@@ -37,7 +35,6 @@ class _NewGameSheet<DifficultyType extends Enum> extends StatefulWidget {
     required this.initialSize,
     required this.initialDifficulty,
     required this.difficultyName,
-    required this.difficultyDescription,
   });
 
   final List<int> boardSizes;
@@ -45,7 +42,6 @@ class _NewGameSheet<DifficultyType extends Enum> extends StatefulWidget {
   final int initialSize;
   final DifficultyType initialDifficulty;
   final String Function(DifficultyType difficulty) difficultyName;
-  final String Function(DifficultyType difficulty) difficultyDescription;
 
   @override
   State<_NewGameSheet<DifficultyType>> createState() =>
@@ -97,11 +93,6 @@ class _NewGameSheetState<DifficultyType extends Enum>
               showSelectedIcon: false,
               onSelectionChanged: (selection) =>
                   setState(() => _selectedDifficulty = selection.single),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              widget.difficultyDescription(_selectedDifficulty),
-              style: textTheme.bodySmall,
             ),
             const SizedBox(height: 32),
             FilledButton(

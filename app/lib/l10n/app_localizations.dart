@@ -200,35 +200,17 @@ abstract class AppLocalizations {
   /// **'Easy'**
   String get difficultyEasy;
 
+  /// No description provided for @difficultyMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get difficultyMedium;
+
   /// No description provided for @difficultyHard.
   ///
   /// In en, this message translates to:
   /// **'Hard'**
   String get difficultyHard;
-
-  /// No description provided for @binairoDifficultyEasyDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Simple steps only: pairs, gaps and line counts.'**
-  String get binairoDifficultyEasyDescription;
-
-  /// No description provided for @binairoDifficultyHardDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'You need to look ahead to finish each line.'**
-  String get binairoDifficultyHardDescription;
-
-  /// No description provided for @sudokuDifficultyEasyDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Simple steps only: a cell with one digit left, or a digit with one place left.'**
-  String get sudokuDifficultyEasyDescription;
-
-  /// No description provided for @sudokuDifficultyHardDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'You need pairs, triples and other harder steps.'**
-  String get sudokuDifficultyHardDescription;
 
   /// No description provided for @boardSize.
   ///

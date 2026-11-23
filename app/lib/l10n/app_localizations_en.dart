@@ -62,23 +62,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get difficultyEasy => 'Easy';
 
   @override
+  String get difficultyMedium => 'Medium';
+
+  @override
   String get difficultyHard => 'Hard';
-
-  @override
-  String get binairoDifficultyEasyDescription =>
-      'Simple steps only: pairs, gaps and line counts.';
-
-  @override
-  String get binairoDifficultyHardDescription =>
-      'You need to look ahead to finish each line.';
-
-  @override
-  String get sudokuDifficultyEasyDescription =>
-      'Simple steps only: a cell with one digit left, or a digit with one place left.';
-
-  @override
-  String get sudokuDifficultyHardDescription =>
-      'You need pairs, triples and other harder steps.';
 
   @override
   String get boardSize => 'Size';

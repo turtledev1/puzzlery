@@ -63,23 +63,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get difficultyEasy => 'Facile';
 
   @override
+  String get difficultyMedium => 'Moyen';
+
+  @override
   String get difficultyHard => 'Difficile';
-
-  @override
-  String get binairoDifficultyEasyDescription =>
-      'Étapes simples seulement : paires, trous et décompte des lignes.';
-
-  @override
-  String get binairoDifficultyHardDescription =>
-      'Il faut anticiper pour compléter chaque ligne.';
-
-  @override
-  String get sudokuDifficultyEasyDescription =>
-      'Étapes simples seulement : une case où un seul chiffre est possible, ou un chiffre qui n\'a qu\'une place.';
-
-  @override
-  String get sudokuDifficultyHardDescription =>
-      'Il faut des paires, des triplets et d\'autres étapes plus difficiles.';
 
   @override
   String get boardSize => 'Taille';

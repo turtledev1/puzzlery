@@ -60,6 +60,14 @@ class SudokuGameController extends PuzzleGameController<SudokuGameState, Hint> {
     notifyListeners();
   }
 
+  void clearSelection() {
+    if (_selectedCell == null) {
+      return;
+    }
+    _selectedCell = null;
+    notifyListeners();
+  }
+
   void toggleNotesMode() {
     if (isSolved) {
       return;

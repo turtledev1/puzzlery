@@ -73,7 +73,6 @@ class BinairoDefinition extends PuzzleDefinition {
       initialSize: settingsController.settings.binairoLastBoardSize,
       initialDifficulty: settingsController.settings.binairoLastDifficulty,
       difficultyName: strings.binairoDifficultyName,
-      difficultyDescription: strings.binairoDifficultyDescription,
     );
     if (choice == null) return null;
     settingsController.update(

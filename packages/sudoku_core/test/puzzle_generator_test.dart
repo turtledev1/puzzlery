@@ -40,40 +40,59 @@ void main() {
     }
   }
 
-  test('a hard 9x9 puzzle cannot be solved with easy deductions alone', () {
+  test('a hard 9x9 puzzle cannot be solved with medium deductions alone', () {
     final puzzle = PuzzleGenerator(
       random: Random(3),
     ).generate(size: 9, difficulty: Difficulty.hard);
 
     expect(
       LogicalSolver(
-        Difficulty.easy.allowedRules,
+        Difficulty.medium.allowedRules,
       ).canSolveCompletely(puzzle.givenBoard),
       isFalse,
     );
   });
 
-  test(
-    'removing any one more clue from a puzzle makes it unsolvable at its level',
-    () {
-      final puzzle = PuzzleGenerator(
+  for (final size in Board.supportedSizes) {
+    test('an easy $size x $size puzzle starts with at least 45% of the cells '
+        'as clues, more than a medium one', () {
+      final easyPuzzle = PuzzleGenerator(
         random: Random(5),
-      ).generate(size: 9, difficulty: Difficulty.easy);
-      final solver = LogicalSolver(Difficulty.easy.allowedRules);
+      ).generate(size: size, difficulty: Difficulty.easy);
+      final mediumPuzzle = PuzzleGenerator(
+        random: Random(5),
+      ).generate(size: size, difficulty: Difficulty.medium);
 
-      for (var row = 0; row < 9; row++) {
-        for (var column = 0; column < 9; column++) {
-          if (puzzle.givenBoard.isEmptyAt(row, column)) continue;
-          final boardWithOneLessClue = puzzle.givenBoard.withCell(
-            row,
-            column,
-            Board.emptyValue,
-          );
-          expect(solver.canSolveCompletely(boardWithOneLessClue), isFalse);
-        }
+      expect(
+        easyPuzzle.givenBoard.filledCellCount,
+        greaterThanOrEqualTo((size * size * 0.45).ceil()),
+      );
+      expect(
+        easyPuzzle.givenBoard.filledCellCount,
+        greaterThan(mediumPuzzle.givenBoard.filledCellCount),
+      );
+    });
+  }
+
+  test('removing any one more clue from a medium puzzle makes it unsolvable at '
+      'its level', () {
+    final puzzle = PuzzleGenerator(
+      random: Random(5),
+    ).generate(size: 9, difficulty: Difficulty.medium);
+    final solver = LogicalSolver(Difficulty.medium.allowedRules);
+
+    for (var row = 0; row < 9; row++) {
+      for (var column = 0; column < 9; column++) {
+        if (puzzle.givenBoard.isEmptyAt(row, column)) continue;
+        final boardWithOneLessClue = puzzle.givenBoard.withCell(
+          row,
+          column,
+          Board.emptyValue,
+        );
+        expect(solver.canSolveCompletely(boardWithOneLessClue), isFalse);
       }
-    },
-  );
+    }
+  });
 
   test('the same seed gives the same puzzle', () {
     Puzzle generateWithSeed(int seed) => PuzzleGenerator(
