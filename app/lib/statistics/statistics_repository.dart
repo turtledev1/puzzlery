@@ -1,5 +1,6 @@
-import 'package:binairo_core/binairo_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../puzzles/puzzle_kind.dart';
 
 class PuzzleStatistics {
   const PuzzleStatistics({
@@ -16,12 +17,17 @@ class PuzzleStatistics {
       solvedCount == 0 ? null : totalTime ~/ solvedCount;
 }
 
+/// Difficulties are [Enum] so the `Difficulty` of every puzzle package fits.
 class StatisticsRepository {
   static const String _keyPrefix = 'statistics';
 
-  Future<PuzzleStatistics> load(int size, Difficulty difficulty) async {
+  Future<PuzzleStatistics> load(
+    PuzzleKind puzzleKind,
+    int size,
+    Enum difficulty,
+  ) async {
     final preferences = await SharedPreferences.getInstance();
-    final keys = _StatisticsKeys(size, difficulty);
+    final keys = _StatisticsKeys(puzzleKind, size, difficulty);
     final bestSeconds = preferences.getInt(keys.bestSeconds);
     return PuzzleStatistics(
       solvedCount: preferences.getInt(keys.solvedCount) ?? 0,
@@ -32,13 +38,14 @@ class StatisticsRepository {
 
   /// Returns `true` when [solveTime] is the new best time.
   Future<bool> recordSolve(
+    PuzzleKind puzzleKind,
     int size,
-    Difficulty difficulty,
+    Enum difficulty,
     Duration solveTime,
   ) async {
-    final previous = await load(size, difficulty);
+    final previous = await load(puzzleKind, size, difficulty);
     final preferences = await SharedPreferences.getInstance();
-    final keys = _StatisticsKeys(size, difficulty);
+    final keys = _StatisticsKeys(puzzleKind, size, difficulty);
     final previousBest = previous.bestTime;
     final newBest = previousBest == null || solveTime < previousBest
         ? solveTime
@@ -52,10 +59,11 @@ class StatisticsRepository {
     return newBest == solveTime;
   }
 
-  Future<void> clearAll() async {
+  Future<void> clearAll(PuzzleKind puzzleKind) async {
     final preferences = await SharedPreferences.getInstance();
+    final puzzleKeyPrefix = '$_keyPrefix.${puzzleKind.name}.';
     final statisticsKeys = preferences.getKeys().where(
-      (key) => key.startsWith('$_keyPrefix.'),
+      (key) => key.startsWith(puzzleKeyPrefix),
     );
     for (final key in statisticsKeys.toList()) {
       await preferences.remove(key);
@@ -64,8 +72,10 @@ class StatisticsRepository {
 }
 
 class _StatisticsKeys {
-  _StatisticsKeys(int size, Difficulty difficulty)
-    : _base = '${StatisticsRepository._keyPrefix}.$size.${difficulty.name}';
+  _StatisticsKeys(PuzzleKind puzzleKind, int size, Enum difficulty)
+    : _base =
+          '${StatisticsRepository._keyPrefix}.${puzzleKind.name}.'
+          '$size.${difficulty.name}';
 
   final String _base;
 

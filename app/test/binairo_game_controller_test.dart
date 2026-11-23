@@ -1,15 +1,15 @@
-import 'package:puzzlery_app/game/game_controller.dart';
+import 'package:puzzlery_app/game/binairo_game_controller.dart';
 import 'package:binairo_core/binairo_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'test_puzzles.dart';
 
 void main() {
-  late GameController controller;
+  late BinairoGameController controller;
 
   setUp(() {
-    controller = GameController(
-      puzzle: fourByFourPuzzleMissingCells(const [
+    controller = BinairoGameController(
+      puzzle: fourByFourBinairoPuzzleMissingCells(const [
         CellPosition(0, 0),
         CellPosition(0, 1),
         CellPosition(3, 3),
@@ -109,7 +109,7 @@ void main() {
   });
 
   test('elapsed time includes time from a previous session', () {
-    final resumedController = GameController(
+    final resumedController = BinairoGameController(
       puzzle: controller.puzzle,
       elapsedBeforeThisSession: const Duration(minutes: 3),
     );

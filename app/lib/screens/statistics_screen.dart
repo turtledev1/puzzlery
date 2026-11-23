@@ -1,25 +1,27 @@
-import 'package:binairo_core/binairo_core.dart';
 import 'package:flutter/material.dart';
 
 import '../app/app_services.dart';
 import '../game/game_options.dart';
 import '../l10n/localized_labels.dart';
+import '../puzzles/puzzle_definition.dart';
 import '../statistics/statistics_repository.dart';
 
 class StatisticsScreen extends StatefulWidget {
-  const StatisticsScreen({super.key});
+  const StatisticsScreen({super.key, required this.definition});
+
+  final PuzzleDefinition definition;
 
   @override
   State<StatisticsScreen> createState() => _StatisticsScreenState();
 }
 
 class _StatisticsScreenState extends State<StatisticsScreen> {
-  Map<(int, Difficulty), PuzzleStatistics>? _statisticsByPuzzleKind;
+  Map<(int, Enum), PuzzleStatistics>? _statisticsBySizeAndDifficulty;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_statisticsByPuzzleKind == null) {
+    if (_statisticsBySizeAndDifficulty == null) {
       _loadStatistics();
     }
   }
@@ -27,15 +29,21 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   StatisticsRepository get _repository =>
       AppScope.of(context).statisticsRepository;
 
+  PuzzleDefinition get _definition => widget.definition;
+
   Future<void> _loadStatistics() async {
     final repository = _repository;
     final loaded = {
-      for (final difficulty in Difficulty.values)
-        for (final size in availableBoardSizes)
-          (size, difficulty): await repository.load(size, difficulty),
+      for (final difficulty in _definition.difficulties)
+        for (final size in _definition.boardSizes)
+          (size, difficulty): await repository.load(
+            _definition.kind,
+            size,
+            difficulty,
+          ),
     };
     if (mounted) {
-      setState(() => _statisticsByPuzzleKind = loaded);
+      setState(() => _statisticsBySizeAndDifficulty = loaded);
     }
   }
 
@@ -59,14 +67,14 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       ),
     );
     if (shouldReset == true) {
-      await _repository.clearAll();
+      await _repository.clearAll(_definition.kind);
       await _loadStatistics();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final statisticsByPuzzleKind = _statisticsByPuzzleKind;
+    final statisticsBySizeAndDifficulty = _statisticsBySizeAndDifficulty;
     final strings = context.strings;
     return Scaffold(
       appBar: AppBar(
@@ -79,19 +87,23 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           ),
         ],
       ),
-      body: statisticsByPuzzleKind == null
+      body: statisticsBySizeAndDifficulty == null
           ? const Center(child: CircularProgressIndicator())
           : ListView(
               padding:
                   const EdgeInsets.all(16) +
                   EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
               children: [
-                for (final difficulty in Difficulty.values)
+                for (final difficulty in _definition.difficulties)
                   _DifficultyStatisticsCard(
-                    difficulty: difficulty,
+                    difficultyName: _definition.difficultyName(
+                      strings,
+                      difficulty,
+                    ),
                     statisticsBySize: {
-                      for (final size in availableBoardSizes)
-                        size: statisticsByPuzzleKind[(size, difficulty)]!,
+                      for (final size in _definition.boardSizes)
+                        size:
+                            statisticsBySizeAndDifficulty[(size, difficulty)]!,
                     },
                   ),
               ],
@@ -102,11 +114,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
 class _DifficultyStatisticsCard extends StatelessWidget {
   const _DifficultyStatisticsCard({
-    required this.difficulty,
+    required this.difficultyName,
     required this.statisticsBySize,
   });
 
-  final Difficulty difficulty;
+  final String difficultyName;
   final Map<int, PuzzleStatistics> statisticsBySize;
 
   @override
@@ -134,10 +146,7 @@ class _DifficultyStatisticsCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              strings.difficultyName(difficulty),
-              style: textTheme.titleLarge,
-            ),
+            Text(difficultyName, style: textTheme.titleLarge),
             const SizedBox(height: 8),
             Table(
               children: [

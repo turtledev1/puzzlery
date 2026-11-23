@@ -1,5 +1,6 @@
-import 'package:binairo_core/binairo_core.dart';
+import 'package:binairo_core/binairo_core.dart' as binairo;
 import 'package:flutter/material.dart';
+import 'package:sudoku_core/sudoku_core.dart' as sudoku;
 
 enum AppLanguage {
   phone(null),
@@ -16,12 +17,15 @@ class AppSettings {
     this.themeMode = ThemeMode.system,
     this.language = AppLanguage.phone,
     this.vibrationEnabled = true,
-    this.showRuleErrors = true,
-    this.showLineCounters = true,
-    this.lastBoardSize = 8,
-    this.lastDifficulty = Difficulty.easy,
     this.autoHintEnabled = false,
     this.autoHintDelay = const Duration(minutes: 1),
+    this.binairoShowRuleErrors = true,
+    this.binairoShowLineCounters = true,
+    this.binairoLastBoardSize = 8,
+    this.binairoLastDifficulty = binairo.Difficulty.easy,
+    this.sudokuShowRuleErrors = true,
+    this.sudokuLastBoardSize = 9,
+    this.sudokuLastDifficulty = sudoku.Difficulty.easy,
   });
 
   static const List<Duration> autoHintDelayChoices = [
@@ -33,32 +37,42 @@ class AppSettings {
   final ThemeMode themeMode;
   final AppLanguage language;
   final bool vibrationEnabled;
-  final bool showRuleErrors;
-  final bool showLineCounters;
-  final int lastBoardSize;
-  final Difficulty lastDifficulty;
   final bool autoHintEnabled;
   final Duration autoHintDelay;
+  final bool binairoShowRuleErrors;
+  final bool binairoShowLineCounters;
+  final int binairoLastBoardSize;
+  final binairo.Difficulty binairoLastDifficulty;
+  final bool sudokuShowRuleErrors;
+  final int sudokuLastBoardSize;
+  final sudoku.Difficulty sudokuLastDifficulty;
 
   AppSettings copyWith({
     ThemeMode? themeMode,
     AppLanguage? language,
     bool? vibrationEnabled,
-    bool? showRuleErrors,
-    bool? showLineCounters,
-    int? lastBoardSize,
-    Difficulty? lastDifficulty,
     bool? autoHintEnabled,
     Duration? autoHintDelay,
+    bool? binairoShowRuleErrors,
+    bool? binairoShowLineCounters,
+    int? binairoLastBoardSize,
+    binairo.Difficulty? binairoLastDifficulty,
+    bool? sudokuShowRuleErrors,
+    int? sudokuLastBoardSize,
+    sudoku.Difficulty? sudokuLastDifficulty,
   }) => AppSettings(
     themeMode: themeMode ?? this.themeMode,
     language: language ?? this.language,
     vibrationEnabled: vibrationEnabled ?? this.vibrationEnabled,
-    showRuleErrors: showRuleErrors ?? this.showRuleErrors,
-    showLineCounters: showLineCounters ?? this.showLineCounters,
-    lastBoardSize: lastBoardSize ?? this.lastBoardSize,
-    lastDifficulty: lastDifficulty ?? this.lastDifficulty,
     autoHintEnabled: autoHintEnabled ?? this.autoHintEnabled,
     autoHintDelay: autoHintDelay ?? this.autoHintDelay,
+    binairoShowRuleErrors: binairoShowRuleErrors ?? this.binairoShowRuleErrors,
+    binairoShowLineCounters:
+        binairoShowLineCounters ?? this.binairoShowLineCounters,
+    binairoLastBoardSize: binairoLastBoardSize ?? this.binairoLastBoardSize,
+    binairoLastDifficulty: binairoLastDifficulty ?? this.binairoLastDifficulty,
+    sudokuShowRuleErrors: sudokuShowRuleErrors ?? this.sudokuShowRuleErrors,
+    sudokuLastBoardSize: sudokuLastBoardSize ?? this.sudokuLastBoardSize,
+    sudokuLastDifficulty: sudokuLastDifficulty ?? this.sudokuLastDifficulty,
   );
 }

@@ -1,55 +1,52 @@
-import 'package:binairo_core/binairo_core.dart';
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SavedGame {
-  const SavedGame({
-    required this.puzzle,
-    required this.currentBoard,
-    required this.elapsed,
-  });
-
-  final Puzzle puzzle;
-  final Board currentBoard;
-  final Duration elapsed;
-
-  double get fillProgress {
-    final cellsToFill =
-        puzzle.size * puzzle.size - puzzle.givenBoard.filledCellCount;
-    final cellsFilledByPlayer =
-        currentBoard.filledCellCount - puzzle.givenBoard.filledCellCount;
-    return cellsToFill == 0 ? 1 : cellsFilledByPlayer / cellsToFill;
-  }
+abstract interface class SavedGameSummary {
+  int get size;
+  Enum get difficulty;
+  Duration get elapsed;
+  DateTime get savedAt;
+  double get fillProgress;
 }
 
-class SavedGameRepository {
-  static const String _difficultyKey = 'saved_game.difficulty';
-  static const String _givenBoardKey = 'saved_game.given_board';
-  static const String _solutionBoardKey = 'saved_game.solution_board';
-  static const String _currentBoardKey = 'saved_game.current_board';
-  static const String _elapsedSecondsKey = 'saved_game.elapsed_seconds';
+double fillProgressOf({
+  required int cellCount,
+  required int givenCellCount,
+  required int filledCellCount,
+}) {
+  final cellsToFill = cellCount - givenCellCount;
+  final cellsFilledByPlayer = filledCellCount - givenCellCount;
+  return cellsToFill == 0 ? 1 : cellsFilledByPlayer / cellsToFill;
+}
 
-  Future<SavedGame?> load() async {
+abstract class SavedGameRepository<SavedGameType extends SavedGameSummary> {
+  const SavedGameRepository();
+
+  @protected
+  String get storageKey;
+
+  @protected
+  Map<String, Object> encode(SavedGameType savedGame);
+
+  /// Throws [FormatException] or [ArgumentError] when [json] is not a valid
+  /// saved game.
+  @protected
+  SavedGameType decode(Map<String, Object?> json);
+
+  Future<SavedGameType?> load() async {
     final preferences = await SharedPreferences.getInstance();
-    final difficultyName = preferences.getString(_difficultyKey);
-    final givenBoardText = preferences.getString(_givenBoardKey);
-    final solutionBoardText = preferences.getString(_solutionBoardKey);
-    final currentBoardText = preferences.getString(_currentBoardKey);
-    if (difficultyName == null ||
-        givenBoardText == null ||
-        solutionBoardText == null ||
-        currentBoardText == null) {
+    final savedText = preferences.getString(storageKey);
+    if (savedText == null) {
       return null;
     }
     try {
-      return SavedGame(
-        puzzle: Puzzle(
-          difficulty: Difficulty.values.byName(difficultyName),
-          givenBoard: Board.parse(givenBoardText),
-          solutionBoard: Board.parse(solutionBoardText),
-        ),
-        currentBoard: Board.parse(currentBoardText),
-        elapsed: Duration(seconds: preferences.getInt(_elapsedSecondsKey) ?? 0),
-      );
+      final json = jsonDecode(savedText);
+      if (json is! Map<String, Object?>) {
+        throw const FormatException('A saved game must be a JSON object.');
+      }
+      return decode(json);
     } on FormatException {
       await clear();
       return null;
@@ -59,37 +56,29 @@ class SavedGameRepository {
     }
   }
 
-  Future<void> save(SavedGame savedGame) async {
+  Future<void> save(SavedGameType savedGame) async {
     final preferences = await SharedPreferences.getInstance();
-    await preferences.setString(
-      _difficultyKey,
-      savedGame.puzzle.difficulty.name,
-    );
-    await preferences.setString(
-      _givenBoardKey,
-      savedGame.puzzle.givenBoard.toText(),
-    );
-    await preferences.setString(
-      _solutionBoardKey,
-      savedGame.puzzle.solutionBoard.toText(),
-    );
-    await preferences.setString(
-      _currentBoardKey,
-      savedGame.currentBoard.toText(),
-    );
-    await preferences.setInt(_elapsedSecondsKey, savedGame.elapsed.inSeconds);
+    await preferences.setString(storageKey, jsonEncode(encode(savedGame)));
   }
 
   Future<void> clear() async {
     final preferences = await SharedPreferences.getInstance();
-    for (final key in [
-      _difficultyKey,
-      _givenBoardKey,
-      _solutionBoardKey,
-      _currentBoardKey,
-      _elapsedSecondsKey,
-    ]) {
-      await preferences.remove(key);
+    await preferences.remove(storageKey);
+  }
+
+  static T requireField<T>(Map<String, Object?> json, String key) {
+    final value = json[key];
+    if (value is! T) {
+      throw FormatException('Saved game field "$key" is missing or invalid.');
     }
+    return value;
+  }
+
+  static List<int> requireIntList(Map<String, Object?> json, String key) {
+    final values = requireField<List<Object?>>(json, key);
+    if (values.any((value) => value is! int)) {
+      throw FormatException('Saved game field "$key" must hold integers.');
+    }
+    return values.cast<int>();
   }
 }

@@ -1,31 +1,31 @@
 import 'dart:async';
 
-import 'package:binairo_core/binairo_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../app/app_services.dart';
-import '../game/game_controller.dart';
 import '../game/game_options.dart';
-import '../game/saved_game_repository.dart';
 import '../l10n/localized_labels.dart';
-import '../widgets/board_grid.dart';
+import '../puzzles/puzzle_definition.dart';
 import '../widgets/celebration.dart';
-import 'how_to_play_screen.dart';
-import 'binairo_settings_screen.dart';
 
 enum _GameMenuAction { restart, hint, howToPlay, settings }
 
-class GameScreen extends StatefulWidget {
-  const GameScreen({super.key, required this.controller});
+class PuzzleGameScreen extends StatefulWidget {
+  const PuzzleGameScreen({
+    super.key,
+    required this.definition,
+    required this.controller,
+  });
 
-  final GameController controller;
+  final PuzzleDefinition definition;
+  final AnyPuzzleGameController controller;
 
   @override
-  State<GameScreen> createState() => _GameScreenState();
+  State<PuzzleGameScreen> createState() => _PuzzleGameScreenState();
 }
 
-class _GameScreenState extends State<GameScreen>
+class _PuzzleGameScreenState extends State<PuzzleGameScreen>
     with SingleTickerProviderStateMixin {
   static const Duration celebrationDuration = Duration(milliseconds: 1800);
 
@@ -38,7 +38,9 @@ class _GameScreenState extends State<GameScreen>
   bool _hasCelebrated = false;
   Timer? _inactivityTimer;
 
-  GameController get _controller => widget.controller;
+  AnyPuzzleGameController get _controller => widget.controller;
+
+  PuzzleDefinition get _definition => widget.definition;
 
   @override
   void initState() {
@@ -100,7 +102,7 @@ class _GameScreenState extends State<GameScreen>
 
   void _showHint() {
     _controller.requestHint();
-    if (_controller.activeHint is WrongCellHint) {
+    if (_controller.activeHintPointsAtWrongCell) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(SnackBar(content: Text(context.strings.wrongCellHint)));
@@ -111,8 +113,9 @@ class _GameScreenState extends State<GameScreen>
     final services = _services!;
     final solveTime = _controller.elapsed;
     final isNewBestTime = services.statisticsRepository.recordSolve(
+      _controller.puzzleKind,
       _controller.size,
-      _controller.puzzle.difficulty,
+      _controller.difficulty,
       solveTime,
     );
     if (services.settingsController.settings.vibrationEnabled) {
@@ -125,26 +128,20 @@ class _GameScreenState extends State<GameScreen>
   }
 
   void _saveProgress() {
-    final savedGameRepository = _services?.savedGameRepository;
-    if (savedGameRepository == null) return;
+    final services = _services;
+    if (services == null) return;
     if (_controller.isSolved) {
-      savedGameRepository.clear();
+      _definition.clearSavedGame(services);
       return;
     }
-    savedGameRepository.save(
-      SavedGame(
-        puzzle: _controller.puzzle,
-        currentBoard: _controller.currentBoard,
-        elapsed: _controller.elapsed,
-      ),
-    );
+    _definition.saveGame(services, _controller);
   }
 
   Future<void> _showSolvedDialog(Duration solveTime, bool isNewBestTime) async {
     if (!mounted) return;
     final strings = context.strings;
     final formattedSolveTime = formatElapsedTime(solveTime);
-    final startNewGame = await showDialog<bool>(
+    final goHome = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         icon: Icon(
@@ -170,7 +167,7 @@ class _GameScreenState extends State<GameScreen>
         ],
       ),
     );
-    if (startNewGame == true && mounted) {
+    if (goHome == true && mounted) {
       Navigator.of(context).pop();
     }
   }
@@ -199,6 +196,10 @@ class _GameScreenState extends State<GameScreen>
     }
   }
 
+  void _openScreen(Widget screen) => Navigator.of(
+    context,
+  ).push(MaterialPageRoute<void>(builder: (_) => screen));
+
   void _onMenuSelected(_GameMenuAction action) {
     switch (action) {
       case _GameMenuAction.restart:
@@ -206,30 +207,24 @@ class _GameScreenState extends State<GameScreen>
       case _GameMenuAction.hint:
         _showHint();
       case _GameMenuAction.howToPlay:
-        Navigator.of(context).push(
-          MaterialPageRoute<void>(builder: (_) => const HowToPlayScreen()),
-        );
+        _openScreen(_definition.buildHowToPlayScreen());
       case _GameMenuAction.settings:
-        Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (_) => const BinairoSettingsScreen(),
-          ),
-        );
+        _openScreen(_definition.buildSettingsScreen());
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final puzzle = _controller.puzzle;
     final settingsController = AppScope.of(context).settingsController;
     final strings = context.strings;
+    final size = _controller.size;
     return ListenableBuilder(
       listenable: Listenable.merge([_controller, settingsController]),
       builder: (context, _) => Scaffold(
         appBar: AppBar(
           title: Text(
-            '${puzzle.size}×${puzzle.size} · '
-            '${strings.difficultyName(puzzle.difficulty)}',
+            '$size×$size · '
+            '${_definition.difficultyName(strings, _controller.difficulty)}',
           ),
           actions: [
             IconButton(
@@ -280,15 +275,11 @@ class _GameScreenState extends State<GameScreen>
             padding: const EdgeInsets.all(8),
             child: Stack(
               children: [
-                Center(
-                  child: BoardGrid(
-                    controller: _controller,
-                    celebration: _celebrationController,
-                    showRuleErrors: settingsController.settings.showRuleErrors,
-                    showLineCounters:
-                        settingsController.settings.showLineCounters,
-                    tapFeedbackEnabled:
-                        settingsController.settings.vibrationEnabled,
+                Positioned.fill(
+                  child: _definition.buildBoardArea(
+                    context,
+                    _controller,
+                    _celebrationController,
                   ),
                 ),
                 Positioned.fill(

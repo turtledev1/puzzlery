@@ -18,6 +18,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get binairoTagline => 'A logic puzzle of zeros and ones';
 
   @override
+  String get sudokuName => 'Sudoku';
+
+  @override
+  String get sudokuTagline => 'A logic puzzle of rows, columns and boxes';
+
+  @override
   String get newGame => 'New game';
 
   @override
@@ -59,12 +65,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get difficultyHard => 'Hard';
 
   @override
-  String get difficultyEasyDescription =>
+  String get binairoDifficultyEasyDescription =>
       'Simple steps only: pairs, gaps and line counts.';
 
   @override
-  String get difficultyHardDescription =>
+  String get binairoDifficultyHardDescription =>
       'You need to look ahead to finish each line.';
+
+  @override
+  String get sudokuDifficultyEasyDescription =>
+      'Simple steps only: a cell with one digit left, or a digit with one place left.';
+
+  @override
+  String get sudokuDifficultyHardDescription =>
+      'You need pairs, triples and other harder steps.';
 
   @override
   String get boardSize => 'Size';
@@ -173,6 +187,51 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get controlUndo => 'Use Undo to take back your last move.';
+
+  @override
+  String get sudokuHowToPlayIntro =>
+      'Fill every empty cell with a digit: 1 to 9 on a 9×9 board, 1 to 6 on 6×6, 1 to 4 on 4×4.';
+
+  @override
+  String get sudokuRuleRowTitle => 'Once in each row';
+
+  @override
+  String get sudokuRuleRowExplanation => 'Each digit is in every row one time.';
+
+  @override
+  String get sudokuRuleColumnTitle => 'Once in each column';
+
+  @override
+  String get sudokuRuleColumnExplanation =>
+      'Each digit is in every column one time.';
+
+  @override
+  String get sudokuRuleBoxTitle => 'Once in each box';
+
+  @override
+  String get sudokuRuleBoxExplanation =>
+      'Each digit is in every box one time. Thick lines show the boxes.';
+
+  @override
+  String get sudokuControlEnterDigit =>
+      'Tap a cell, then tap a digit below the board.';
+
+  @override
+  String get sudokuControlNotes =>
+      'Tap Notes to write small digits that could fit. Tap Notes again to write normal digits.';
+
+  @override
+  String get sudokuControlErase => 'Tap Erase to clear the cell.';
+
+  @override
+  String get sudokuControlClues =>
+      'Bold digits are clues. You cannot change them.';
+
+  @override
+  String get sudokuNotes => 'Notes';
+
+  @override
+  String get sudokuErase => 'Erase';
 
   @override
   String get resetStatisticsTitle => 'Reset statistics?';

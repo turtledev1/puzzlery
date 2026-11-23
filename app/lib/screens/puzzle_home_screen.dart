@@ -1,30 +1,27 @@
 import 'package:flutter/material.dart';
 
 import '../app/app_services.dart';
-import '../game/game_controller.dart';
 import '../game/saved_game_repository.dart';
 import '../l10n/localized_labels.dart';
-import '../puzzles/puzzle_kind.dart';
-import '../widgets/app_logo.dart';
+import '../puzzles/puzzle_definition.dart';
 import '../widgets/continue_card.dart';
-import '../widgets/new_game_sheet.dart';
-import 'game_screen.dart';
-import 'how_to_play_screen.dart';
-import 'binairo_settings_screen.dart';
-import 'statistics_screen.dart';
 
-class BinairoHomeScreen extends StatefulWidget {
-  const BinairoHomeScreen({super.key});
+class PuzzleHomeScreen extends StatefulWidget {
+  const PuzzleHomeScreen({super.key, required this.definition});
+
+  final PuzzleDefinition definition;
 
   @override
-  State<BinairoHomeScreen> createState() => _BinairoHomeScreenState();
+  State<PuzzleHomeScreen> createState() => _PuzzleHomeScreenState();
 }
 
-class _BinairoHomeScreenState extends State<BinairoHomeScreen> {
+class _PuzzleHomeScreenState extends State<PuzzleHomeScreen> {
   late AppServices _services;
-  SavedGame? _savedGame;
+  SavedGameSummary? _savedGame;
   bool _isGenerating = false;
   bool _hasLoadedOnce = false;
+
+  PuzzleDefinition get _definition => widget.definition;
 
   @override
   void didChangeDependencies() {
@@ -37,36 +34,25 @@ class _BinairoHomeScreenState extends State<BinairoHomeScreen> {
   }
 
   Future<void> _loadSavedGame() async {
-    final savedGame = await _services.savedGameRepository.load();
+    final savedGame = await _definition.loadSavedGame(_services);
     if (mounted) {
       setState(() => _savedGame = savedGame);
     }
   }
 
   Future<void> _chooseAndStartNewGame() async {
-    final settingsController = _services.settingsController;
-    final choice = await showNewGameSheet(
+    final createGameScreen = await _definition.chooseNewGame(
       context,
-      initialSize: settingsController.settings.lastBoardSize,
-      initialDifficulty: settingsController.settings.lastDifficulty,
+      _services,
     );
-    if (choice == null || !mounted) return;
-    settingsController.update(
-      (settings) => settings.copyWith(
-        lastBoardSize: choice.size,
-        lastDifficulty: choice.difficulty,
-      ),
-    );
+    if (createGameScreen == null || !mounted) return;
     if (_savedGame != null && !await _confirmReplacingSavedGame()) return;
 
     setState(() => _isGenerating = true);
-    final puzzle = await _services.puzzleFactory(
-      choice.size,
-      choice.difficulty,
-    );
+    final gameScreen = await createGameScreen();
     if (!mounted) return;
     setState(() => _isGenerating = false);
-    await _openGame(GameController(puzzle: puzzle));
+    await _openGame(gameScreen);
   }
 
   Future<bool> _confirmReplacingSavedGame() async {
@@ -90,12 +76,10 @@ class _BinairoHomeScreenState extends State<BinairoHomeScreen> {
     return shouldReplace == true;
   }
 
-  Future<void> _openGame(GameController controller) async {
-    await Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => GameScreen(controller: controller),
-      ),
-    );
+  Future<void> _openGame(Widget gameScreen) async {
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => gameScreen));
     await _loadSavedGame();
   }
 
@@ -120,10 +104,10 @@ class _BinairoHomeScreenState extends State<BinairoHomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Center(child: AppLogo(size: 112)),
+                  Center(child: _definition.buildLogo(size: 112)),
                   const SizedBox(height: 24),
                   Text(
-                    strings.puzzleName(PuzzleKind.binairo),
+                    strings.puzzleName(_definition.kind),
                     textAlign: TextAlign.center,
                     style: textTheme.displaySmall?.copyWith(
                       fontWeight: FontWeight.bold,
@@ -131,7 +115,7 @@ class _BinairoHomeScreenState extends State<BinairoHomeScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    strings.puzzleTagline(PuzzleKind.binairo),
+                    strings.puzzleTagline(_definition.kind),
                     textAlign: TextAlign.center,
                     style: textTheme.bodyLarge?.copyWith(
                       color: colorScheme.onSurfaceVariant,
@@ -141,9 +125,17 @@ class _BinairoHomeScreenState extends State<BinairoHomeScreen> {
                   if (savedGame != null) ...[
                     ContinueCard(
                       savedGame: savedGame,
+                      difficultyName: _definition.difficultyName(
+                        strings,
+                        savedGame.difficulty,
+                      ),
                       onTap: _isGenerating
                           ? null
-                          : () => _openGame(GameController.resume(savedGame)),
+                          : () => _openGame(
+                              _definition.buildGameScreen(
+                                _definition.resumeGame(savedGame),
+                              ),
+                            ),
                     ),
                     const SizedBox(height: 16),
                   ],
@@ -171,20 +163,22 @@ class _BinairoHomeScreenState extends State<BinairoHomeScreen> {
                         _HomeShortcut(
                           icon: Icons.school_outlined,
                           label: strings.howToPlay,
-                          onTap: () => _openScreen(const HowToPlayScreen()),
+                          onTap: () =>
+                              _openScreen(_definition.buildHowToPlayScreen()),
                         ),
                         const SizedBox(width: 12),
                         _HomeShortcut(
                           icon: Icons.bar_chart,
                           label: strings.statistics,
-                          onTap: () => _openScreen(const StatisticsScreen()),
+                          onTap: () =>
+                              _openScreen(_definition.buildStatisticsScreen()),
                         ),
                         const SizedBox(width: 12),
                         _HomeShortcut(
                           icon: Icons.settings_outlined,
                           label: strings.settings,
                           onTap: () =>
-                              _openScreen(const BinairoSettingsScreen()),
+                              _openScreen(_definition.buildSettingsScreen()),
                         ),
                       ],
                     ),

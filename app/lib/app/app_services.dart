@@ -1,32 +1,50 @@
 import 'dart:isolate';
 
-import 'package:binairo_core/binairo_core.dart';
+import 'package:binairo_core/binairo_core.dart' as binairo;
 import 'package:flutter/widgets.dart';
+import 'package:sudoku_core/sudoku_core.dart' as sudoku;
 
-import '../game/saved_game_repository.dart';
+import '../game/binairo_saved_game.dart';
+import '../game/sudoku_saved_game.dart';
 import '../settings/settings_controller.dart';
 import '../statistics/statistics_repository.dart';
 
-typedef PuzzleFactory =
-    Future<Puzzle> Function(int size, Difficulty difficulty);
+typedef BinairoPuzzleFactory =
+    Future<binairo.Puzzle> Function(int size, binairo.Difficulty difficulty);
 
-Future<Puzzle> generatePuzzleInBackground(int size, Difficulty difficulty) =>
-    Isolate.run(
-      () => PuzzleGenerator().generate(size: size, difficulty: difficulty),
-    );
+typedef SudokuPuzzleFactory =
+    Future<sudoku.Puzzle> Function(int size, sudoku.Difficulty difficulty);
+
+Future<binairo.Puzzle> generateBinairoPuzzleInBackground(
+  int size,
+  binairo.Difficulty difficulty,
+) => Isolate.run(
+  () => binairo.PuzzleGenerator().generate(size: size, difficulty: difficulty),
+);
+
+Future<sudoku.Puzzle> generateSudokuPuzzleInBackground(
+  int size,
+  sudoku.Difficulty difficulty,
+) => Isolate.run(
+  () => sudoku.PuzzleGenerator().generate(size: size, difficulty: difficulty),
+);
 
 class AppServices {
   const AppServices({
-    required this.savedGameRepository,
     required this.statisticsRepository,
     required this.settingsController,
-    this.puzzleFactory = generatePuzzleInBackground,
+    this.binairoSavedGameRepository = const BinairoSavedGameRepository(),
+    this.sudokuSavedGameRepository = const SudokuSavedGameRepository(),
+    this.binairoPuzzleFactory = generateBinairoPuzzleInBackground,
+    this.sudokuPuzzleFactory = generateSudokuPuzzleInBackground,
   });
 
-  final SavedGameRepository savedGameRepository;
   final StatisticsRepository statisticsRepository;
   final SettingsController settingsController;
-  final PuzzleFactory puzzleFactory;
+  final BinairoSavedGameRepository binairoSavedGameRepository;
+  final SudokuSavedGameRepository sudokuSavedGameRepository;
+  final BinairoPuzzleFactory binairoPuzzleFactory;
+  final SudokuPuzzleFactory sudokuPuzzleFactory;
 }
 
 class AppScope extends InheritedWidget {

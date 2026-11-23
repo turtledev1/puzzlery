@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'board_cell.dart';
+import 'binairo_board_cell.dart';
 
 class AppLogo extends StatelessWidget {
   const AppLogo({super.key, this.size = 96});
@@ -37,15 +37,15 @@ class AppLogo extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              tile('0', BoardCell.zeroColor),
-              tile('1', BoardCell.oneColor),
+              tile('0', BinairoBoardCell.zeroColor),
+              tile('1', BinairoBoardCell.oneColor),
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              tile('1', BoardCell.oneColor),
-              tile('0', BoardCell.zeroColor),
+              tile('1', BinairoBoardCell.oneColor),
+              tile('0', BinairoBoardCell.zeroColor),
             ],
           ),
         ],

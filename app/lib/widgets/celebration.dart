@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import 'board_cell.dart';
+import 'binairo_board_cell.dart';
 
 class CelebrationWave extends StatelessWidget {
   const CelebrationWave({
@@ -85,8 +85,8 @@ class _ConfettiOverlayState extends State<ConfettiOverlay> {
 
   static List<_ConfettiPiece> _createPieces(Random random) {
     const colors = [
-      BoardCell.zeroColor,
-      BoardCell.oneColor,
+      BinairoBoardCell.zeroColor,
+      BinairoBoardCell.oneColor,
       Color(0xFF4CD964),
       Color(0xFFFFD60A),
       Color(0xFFFF6FB5),

@@ -4,15 +4,16 @@ import 'package:binairo_core/binairo_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../game/game_controller.dart';
-import 'board_cell.dart';
+import '../game/binairo_game_controller.dart';
+import 'binairo_board_cell.dart';
 import 'celebration.dart';
 import 'hint_pulse.dart';
+import 'puzzle_colors.dart';
 
 /// Line counters sit right of each row and below each column, and show the
 /// zeros and ones still missing in that line.
-class BoardGrid extends StatelessWidget {
-  const BoardGrid({
+class BinairoBoardGrid extends StatelessWidget {
+  const BinairoBoardGrid({
     super.key,
     required this.controller,
     this.celebration = kAlwaysDismissedAnimation,
@@ -21,7 +22,7 @@ class BoardGrid extends StatelessWidget {
     this.tapFeedbackEnabled = false,
   });
 
-  final GameController controller;
+  final BinairoGameController controller;
   final Animation<double> celebration;
   final bool showRuleErrors;
   final bool showLineCounters;
@@ -36,7 +37,7 @@ class BoardGrid extends StatelessWidget {
       key: ValueKey('hint-$row-$column'),
       color: switch (hint) {
         DeducibleCellHint() => HintPulse.deducibleCellColor,
-        WrongCellHint() => BoardCell.violationColor,
+        WrongCellHint() => PuzzleColors.ruleViolation,
       },
       child: cell,
     );
@@ -79,7 +80,7 @@ class BoardGrid extends StatelessWidget {
                               row: row,
                               column: column,
                               boardSize: size,
-                              child: BoardCell(
+                              child: BinairoBoardCell(
                                 key: ValueKey('cell-$row-$column'),
                                 value: controller.currentBoard.cellAt(
                                   row,
@@ -148,7 +149,7 @@ class _LineCounter extends StatelessWidget {
     Text counterText(int valuesLeft, Color color) => Text(
       '$valuesLeft',
       style: TextStyle(
-        color: valuesLeft < 0 ? BoardCell.violationColor : color,
+        color: valuesLeft < 0 ? PuzzleColors.ruleViolation : color,
         fontWeight: FontWeight.bold,
       ),
     );
@@ -161,8 +162,8 @@ class _LineCounter extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            counterText(zerosLeft, BoardCell.zeroColor),
-            counterText(onesLeft, BoardCell.oneColor),
+            counterText(zerosLeft, BinairoBoardCell.zeroColor),
+            counterText(onesLeft, BinairoBoardCell.oneColor),
           ],
         ),
       ),

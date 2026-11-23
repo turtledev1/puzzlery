@@ -1,8 +1,10 @@
 import 'package:binairo_core/binairo_core.dart';
 import 'package:flutter/material.dart';
 
-class BoardCell extends StatelessWidget {
-  const BoardCell({
+import 'puzzle_colors.dart';
+
+class BinairoBoardCell extends StatelessWidget {
+  const BinairoBoardCell({
     super.key,
     required this.value,
     required this.isGiven,
@@ -12,8 +14,6 @@ class BoardCell extends StatelessWidget {
 
   static const Color zeroColor = Color(0xFFF4A259);
   static const Color oneColor = Color(0xFF3D7DD8);
-  static const Color violationColor = Color(0xFFFF1744);
-  static const double violationRingWidth = 2.5;
 
   final CellValue value;
   final bool isGiven;
@@ -34,11 +34,16 @@ class BoardCell extends StatelessWidget {
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.all(1.5),
-        padding: EdgeInsets.all(isInViolation ? violationRingWidth : 0),
+        padding: EdgeInsets.all(
+          isInViolation ? PuzzleColors.ruleViolationRingWidth : 0,
+        ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           border: isInViolation
-              ? Border.all(color: violationColor, width: violationRingWidth)
+              ? Border.all(
+                  color: PuzzleColors.ruleViolation,
+                  width: PuzzleColors.ruleViolationRingWidth,
+                )
               : null,
         ),
         child: Container(

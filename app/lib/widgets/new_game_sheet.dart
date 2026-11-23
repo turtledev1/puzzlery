@@ -1,41 +1,61 @@
-import 'package:binairo_core/binairo_core.dart';
 import 'package:flutter/material.dart';
 
-import '../game/game_options.dart';
 import '../l10n/localized_labels.dart';
 
-typedef NewGameChoice = ({int size, Difficulty difficulty});
+typedef NewGameChoice<DifficultyType extends Enum> = ({
+  int size,
+  DifficultyType difficulty,
+});
 
-Future<NewGameChoice?> showNewGameSheet(
+Future<NewGameChoice<DifficultyType>?>
+showNewGameSheet<DifficultyType extends Enum>(
   BuildContext context, {
+  required List<int> boardSizes,
+  required List<DifficultyType> difficulties,
   required int initialSize,
-  required Difficulty initialDifficulty,
-}) => showModalBottomSheet<NewGameChoice>(
+  required DifficultyType initialDifficulty,
+  required String Function(DifficultyType difficulty) difficultyName,
+  required String Function(DifficultyType difficulty) difficultyDescription,
+}) => showModalBottomSheet<NewGameChoice<DifficultyType>>(
   context: context,
   showDragHandle: true,
   isScrollControlled: true,
   builder: (_) => _NewGameSheet(
+    boardSizes: boardSizes,
+    difficulties: difficulties,
     initialSize: initialSize,
     initialDifficulty: initialDifficulty,
+    difficultyName: difficultyName,
+    difficultyDescription: difficultyDescription,
   ),
 );
 
-class _NewGameSheet extends StatefulWidget {
+class _NewGameSheet<DifficultyType extends Enum> extends StatefulWidget {
   const _NewGameSheet({
+    required this.boardSizes,
+    required this.difficulties,
     required this.initialSize,
     required this.initialDifficulty,
+    required this.difficultyName,
+    required this.difficultyDescription,
   });
 
+  final List<int> boardSizes;
+  final List<DifficultyType> difficulties;
   final int initialSize;
-  final Difficulty initialDifficulty;
+  final DifficultyType initialDifficulty;
+  final String Function(DifficultyType difficulty) difficultyName;
+  final String Function(DifficultyType difficulty) difficultyDescription;
 
   @override
-  State<_NewGameSheet> createState() => _NewGameSheetState();
+  State<_NewGameSheet<DifficultyType>> createState() =>
+      _NewGameSheetState<DifficultyType>();
 }
 
-class _NewGameSheetState extends State<_NewGameSheet> {
+class _NewGameSheetState<DifficultyType extends Enum>
+    extends State<_NewGameSheet<DifficultyType>> {
   late int _selectedSize = widget.initialSize;
-  late Difficulty _selectedDifficulty = widget.initialDifficulty;
+  late DifficultyType _selectedDifficulty = widget.initialDifficulty;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +74,7 @@ class _NewGameSheetState extends State<_NewGameSheet> {
             const SizedBox(height: 8),
             SegmentedButton<int>(
               segments: [
-                for (final size in availableBoardSizes)
+                for (final size in widget.boardSizes)
                   ButtonSegment(value: size, label: Text('$size×$size')),
               ],
               selected: {_selectedSize},
@@ -65,12 +85,12 @@ class _NewGameSheetState extends State<_NewGameSheet> {
             const SizedBox(height: 24),
             Text(strings.difficultyLevel, style: textTheme.titleMedium),
             const SizedBox(height: 8),
-            SegmentedButton<Difficulty>(
+            SegmentedButton<DifficultyType>(
               segments: [
-                for (final difficulty in Difficulty.values)
+                for (final difficulty in widget.difficulties)
                   ButtonSegment(
                     value: difficulty,
-                    label: Text(strings.difficultyName(difficulty)),
+                    label: Text(widget.difficultyName(difficulty)),
                   ),
               ],
               selected: {_selectedDifficulty},
@@ -80,7 +100,7 @@ class _NewGameSheetState extends State<_NewGameSheet> {
             ),
             const SizedBox(height: 8),
             Text(
-              strings.difficultyDescription(_selectedDifficulty),
+              widget.difficultyDescription(_selectedDifficulty),
               style: textTheme.bodySmall,
             ),
             const SizedBox(height: 32),

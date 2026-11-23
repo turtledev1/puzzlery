@@ -116,6 +116,18 @@ abstract class AppLocalizations {
   /// **'A logic puzzle of zeros and ones'**
   String get binairoTagline;
 
+  /// No description provided for @sudokuName.
+  ///
+  /// In en, this message translates to:
+  /// **'Sudoku'**
+  String get sudokuName;
+
+  /// No description provided for @sudokuTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'A logic puzzle of rows, columns and boxes'**
+  String get sudokuTagline;
+
   /// No description provided for @newGame.
   ///
   /// In en, this message translates to:
@@ -194,17 +206,29 @@ abstract class AppLocalizations {
   /// **'Hard'**
   String get difficultyHard;
 
-  /// No description provided for @difficultyEasyDescription.
+  /// No description provided for @binairoDifficultyEasyDescription.
   ///
   /// In en, this message translates to:
   /// **'Simple steps only: pairs, gaps and line counts.'**
-  String get difficultyEasyDescription;
+  String get binairoDifficultyEasyDescription;
 
-  /// No description provided for @difficultyHardDescription.
+  /// No description provided for @binairoDifficultyHardDescription.
   ///
   /// In en, this message translates to:
   /// **'You need to look ahead to finish each line.'**
-  String get difficultyHardDescription;
+  String get binairoDifficultyHardDescription;
+
+  /// No description provided for @sudokuDifficultyEasyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Simple steps only: a cell with one digit left, or a digit with one place left.'**
+  String get sudokuDifficultyEasyDescription;
+
+  /// No description provided for @sudokuDifficultyHardDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You need pairs, triples and other harder steps.'**
+  String get sudokuDifficultyHardDescription;
 
   /// No description provided for @boardSize.
   ///
@@ -397,6 +421,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Use Undo to take back your last move.'**
   String get controlUndo;
+
+  /// No description provided for @sudokuHowToPlayIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill every empty cell with a digit: 1 to 9 on a 9×9 board, 1 to 6 on 6×6, 1 to 4 on 4×4.'**
+  String get sudokuHowToPlayIntro;
+
+  /// No description provided for @sudokuRuleRowTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Once in each row'**
+  String get sudokuRuleRowTitle;
+
+  /// No description provided for @sudokuRuleRowExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Each digit is in every row one time.'**
+  String get sudokuRuleRowExplanation;
+
+  /// No description provided for @sudokuRuleColumnTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Once in each column'**
+  String get sudokuRuleColumnTitle;
+
+  /// No description provided for @sudokuRuleColumnExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Each digit is in every column one time.'**
+  String get sudokuRuleColumnExplanation;
+
+  /// No description provided for @sudokuRuleBoxTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Once in each box'**
+  String get sudokuRuleBoxTitle;
+
+  /// No description provided for @sudokuRuleBoxExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Each digit is in every box one time. Thick lines show the boxes.'**
+  String get sudokuRuleBoxExplanation;
+
+  /// No description provided for @sudokuControlEnterDigit.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a cell, then tap a digit below the board.'**
+  String get sudokuControlEnterDigit;
+
+  /// No description provided for @sudokuControlNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap Notes to write small digits that could fit. Tap Notes again to write normal digits.'**
+  String get sudokuControlNotes;
+
+  /// No description provided for @sudokuControlErase.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap Erase to clear the cell.'**
+  String get sudokuControlErase;
+
+  /// No description provided for @sudokuControlClues.
+  ///
+  /// In en, this message translates to:
+  /// **'Bold digits are clues. You cannot change them.'**
+  String get sudokuControlClues;
+
+  /// No description provided for @sudokuNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get sudokuNotes;
+
+  /// No description provided for @sudokuErase.
+  ///
+  /// In en, this message translates to:
+  /// **'Erase'**
+  String get sudokuErase;
 
   /// No description provided for @resetStatisticsTitle.
   ///

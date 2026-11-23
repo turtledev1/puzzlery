@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../app/app_services.dart';
-import '../game/game_controller.dart';
 import '../game/saved_game_repository.dart';
 import '../l10n/localized_labels.dart';
+import '../puzzles/puzzle_definition.dart';
 import '../puzzles/puzzle_kind.dart';
-import '../widgets/app_logo.dart';
 import '../widgets/continue_card.dart';
-import 'binairo_home_screen.dart';
-import 'game_screen.dart';
+import 'puzzle_home_screen.dart';
 import 'settings_screen.dart';
 
 class PuzzlePickerScreen extends StatefulWidget {
@@ -20,7 +18,7 @@ class PuzzlePickerScreen extends StatefulWidget {
 
 class _PuzzlePickerScreenState extends State<PuzzlePickerScreen> {
   late AppServices _services;
-  SavedGame? _savedGame;
+  (PuzzleDefinition, SavedGameSummary)? _mostRecentSavedGame;
   bool _hasLoadedOnce = false;
 
   @override
@@ -34,9 +32,18 @@ class _PuzzlePickerScreenState extends State<PuzzlePickerScreen> {
   }
 
   Future<void> _loadSavedGame() async {
-    final savedGame = await _services.savedGameRepository.load();
+    (PuzzleDefinition, SavedGameSummary)? mostRecentSavedGame;
+    for (final puzzleKind in PuzzleKind.values) {
+      final definition = puzzleKind.definition;
+      final savedGame = await definition.loadSavedGame(_services);
+      if (savedGame == null) continue;
+      if (mostRecentSavedGame == null ||
+          savedGame.savedAt.isAfter(mostRecentSavedGame.$2.savedAt)) {
+        mostRecentSavedGame = (definition, savedGame);
+      }
+    }
     if (mounted) {
-      setState(() => _savedGame = savedGame);
+      setState(() => _mostRecentSavedGame = mostRecentSavedGame);
     }
   }
 
@@ -47,14 +54,10 @@ class _PuzzlePickerScreenState extends State<PuzzlePickerScreen> {
     await _loadSavedGame();
   }
 
-  Widget _homeScreenOf(PuzzleKind puzzleKind) => switch (puzzleKind) {
-    PuzzleKind.binairo => const BinairoHomeScreen(),
-  };
-
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final savedGame = _savedGame;
+    final mostRecentSavedGame = _mostRecentSavedGame;
     final strings = context.strings;
     return Scaffold(
       appBar: AppBar(
@@ -77,12 +80,21 @@ class _PuzzlePickerScreenState extends State<PuzzlePickerScreen> {
             child: ListView(
               padding: const EdgeInsets.all(24),
               children: [
-                if (savedGame != null) ...[
+                if (mostRecentSavedGame case (
+                  final definition,
+                  final savedGame,
+                )) ...[
                   ContinueCard(
                     savedGame: savedGame,
-                    puzzleName: strings.puzzleName(PuzzleKind.binairo),
+                    puzzleName: strings.puzzleName(definition.kind),
+                    difficultyName: definition.difficultyName(
+                      strings,
+                      savedGame.difficulty,
+                    ),
                     onTap: () => _openScreenThenRefresh(
-                      GameScreen(controller: GameController.resume(savedGame)),
+                      definition.buildGameScreen(
+                        definition.resumeGame(savedGame),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -90,8 +102,9 @@ class _PuzzlePickerScreenState extends State<PuzzlePickerScreen> {
                 for (final puzzleKind in PuzzleKind.values) ...[
                   _PuzzleCard(
                     puzzleKind: puzzleKind,
-                    onTap: () =>
-                        _openScreenThenRefresh(_homeScreenOf(puzzleKind)),
+                    onTap: () => _openScreenThenRefresh(
+                      PuzzleHomeScreen(definition: puzzleKind.definition),
+                    ),
                   ),
                   const SizedBox(height: 12),
                 ],
@@ -109,10 +122,6 @@ class _PuzzleCard extends StatelessWidget {
 
   final PuzzleKind puzzleKind;
   final VoidCallback onTap;
-
-  Widget get _logo => switch (puzzleKind) {
-    PuzzleKind.binairo => const AppLogo(size: 64),
-  };
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +141,7 @@ class _PuzzleCard extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              _logo,
+              puzzleKind.definition.buildLogo(size: 64),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(

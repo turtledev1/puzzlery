@@ -1,7 +1,9 @@
+import 'package:puzzlery_app/puzzles/puzzle_kind.dart';
 import 'package:puzzlery_app/settings/app_settings.dart';
-import 'package:puzzlery_app/widgets/board_cell.dart';
+import 'package:puzzlery_app/widgets/binairo_board_cell.dart';
 import 'package:puzzlery_app/widgets/celebration.dart';
 import 'package:puzzlery_app/widgets/hint_pulse.dart';
+import 'package:puzzlery_app/widgets/puzzle_colors.dart';
 import 'package:binairo_core/binairo_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,13 +16,20 @@ void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
   group('puzzle picker', () {
-    testWidgets('the first screen shows the app name, a Binairo card and '
-        'settings, but no statistics and no continue card', (tester) async {
+    testWidgets('the first screen shows the app name, a Binairo card, '
+        'a Sudoku card and settings, but no statistics and no continue card', (
+      tester,
+    ) async {
       await pumpPuzzleryApp(tester);
 
       expect(find.text('Puzzlery'), findsOneWidget);
       expect(find.text('Binairo'), findsOneWidget);
       expect(find.text('A logic puzzle of zeros and ones'), findsOneWidget);
+      expect(find.text('Sudoku'), findsOneWidget);
+      expect(
+        find.text('A logic puzzle of rows, columns and boxes'),
+        findsOneWidget,
+      );
       expect(find.byTooltip('Settings'), findsOneWidget);
       expect(find.byTooltip('Statistics'), findsNothing);
       expect(find.text('Continue'), findsNothing);
@@ -88,7 +97,7 @@ void main() {
       await tester.tap(find.text('Continue'));
       await tester.pumpAndSettle();
 
-      await solvePuzzleMissingTwoCells(tester);
+      await solveBinairoPuzzleMissingTwoCells(tester);
       await tester.pumpAndSettle();
       await tester.tap(find.widgetWithText(FilledButton, 'Home'));
       await tester.pumpAndSettle();
@@ -171,9 +180,9 @@ void main() {
 
       expect(requestedPuzzles, [(12, Difficulty.hard)]);
       expect(find.byKey(const ValueKey('cell-0-0')), findsOneWidget);
-      expect(services.settingsController.settings.lastBoardSize, 12);
+      expect(services.settingsController.settings.binairoLastBoardSize, 12);
       expect(
-        services.settingsController.settings.lastDifficulty,
+        services.settingsController.settings.binairoLastDifficulty,
         Difficulty.hard,
       );
     });
@@ -317,10 +326,10 @@ void main() {
         final ringBorder =
             (ring.decoration! as BoxDecoration).border! as Border;
 
-        expect(ringBorder.top.color, BoardCell.violationColor);
+        expect(ringBorder.top.color, PuzzleColors.ruleViolation);
         expect(
-          BoardCell.violationColor,
-          isNot(anyOf(BoardCell.zeroColor, BoardCell.oneColor)),
+          PuzzleColors.ruleViolation,
+          isNot(anyOf(BinairoBoardCell.zeroColor, BinairoBoardCell.oneColor)),
         );
       },
     );
@@ -334,7 +343,7 @@ void main() {
       await tapCell(tester, 0, 0);
 
       await services.settingsController.update(
-        (settings) => settings.copyWith(showRuleErrors: false),
+        (settings) => settings.copyWith(binairoShowRuleErrors: false),
       );
       await tester.pump();
 
@@ -355,7 +364,7 @@ void main() {
       expect(find.byKey(const ValueKey('row-counter-0')), findsOneWidget);
 
       await services.settingsController.update(
-        (settings) => settings.copyWith(showLineCounters: false),
+        (settings) => settings.copyWith(binairoShowLineCounters: false),
       );
       await tester.pump();
 
@@ -369,7 +378,7 @@ void main() {
       await pumpPuzzleryAppOnBinairoHome(tester);
       await startNewGameFromHome(tester);
 
-      await solvePuzzleMissingTwoCells(tester);
+      await solveBinairoPuzzleMissingTwoCells(tester);
       await tester.pump(const Duration(milliseconds: 500));
       final poppingCells = find.descendant(
         of: find.byType(CelebrationWave),
@@ -388,7 +397,7 @@ void main() {
       (tester) async {
         final services = await pumpPuzzleryAppOnBinairoHome(tester);
         await startNewGameFromHome(tester);
-        await solvePuzzleMissingTwoCells(tester);
+        await solveBinairoPuzzleMissingTwoCells(tester);
         await tester.pumpAndSettle();
 
         await tester.tap(find.widgetWithText(FilledButton, 'Home'));
@@ -396,6 +405,7 @@ void main() {
 
         expect(find.text('Continue'), findsNothing);
         final statistics = await services.statisticsRepository.load(
+          PuzzleKind.binairo,
           4,
           Difficulty.easy,
         );

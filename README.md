@@ -2,13 +2,13 @@
 
 A collection of logic puzzles for Android and iOS.
 
-Puzzles: Binairo (also called Takuzu). More are planned.
+Puzzles: Binairo (also called Takuzu) and Sudoku. More are planned.
 
 ## Layout
 
 - `packages/<puzzle>_core/`: one pure Dart package for each puzzle, with its rules, solver and generator. No Flutter, so each core is easy to port.
   - `packages/binairo_core/`: Binairo.
-  - `packages/sudoku_core/`: Sudoku, in 4x4, 6x6 and 9x9. Not in the app yet.
+  - `packages/sudoku_core/`: Sudoku, in 4x4, 6x6 and 9x9.
 - `app/`: the Flutter app, `puzzlery_app`. It uses the core packages.
 
 All are members of one [Dart pub workspace](https://dart.dev/tools/pub/workspaces) (root `pubspec.yaml`).

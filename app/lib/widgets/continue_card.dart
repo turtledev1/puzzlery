@@ -8,18 +8,19 @@ class ContinueCard extends StatelessWidget {
   const ContinueCard({
     super.key,
     required this.savedGame,
+    required this.difficultyName,
     required this.onTap,
     this.puzzleName,
   });
 
-  final SavedGame savedGame;
+  final SavedGameSummary savedGame;
+  final String difficultyName;
   final VoidCallback? onTap;
   final String? puzzleName;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final puzzle = savedGame.puzzle;
     final percentFilled = (savedGame.fillProgress * 100).round();
     final strings = context.strings;
     return Card.filled(
@@ -40,8 +41,8 @@ class ContinueCard extends StatelessWidget {
                     Text(
                       [
                         ?puzzleName,
-                        '${puzzle.size}×${puzzle.size}',
-                        strings.difficultyName(puzzle.difficulty),
+                        '${savedGame.size}×${savedGame.size}',
+                        difficultyName,
                         formatElapsedTime(savedGame.elapsed),
                       ].join(' · '),
                       style: textTheme.bodyMedium,

@@ -18,6 +18,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get binairoTagline => 'Un casse-tête logique de zéros et de uns';
 
   @override
+  String get sudokuName => 'Sudoku';
+
+  @override
+  String get sudokuTagline =>
+      'Un casse-tête logique de lignes, de colonnes et de blocs';
+
+  @override
   String get newGame => 'Nouvelle partie';
 
   @override
@@ -59,12 +66,20 @@ class AppLocalizationsFr extends AppLocalizations {
   String get difficultyHard => 'Difficile';
 
   @override
-  String get difficultyEasyDescription =>
+  String get binairoDifficultyEasyDescription =>
       'Étapes simples seulement : paires, trous et décompte des lignes.';
 
   @override
-  String get difficultyHardDescription =>
+  String get binairoDifficultyHardDescription =>
       'Il faut anticiper pour compléter chaque ligne.';
+
+  @override
+  String get sudokuDifficultyEasyDescription =>
+      'Étapes simples seulement : une case où un seul chiffre est possible, ou un chiffre qui n\'a qu\'une place.';
+
+  @override
+  String get sudokuDifficultyHardDescription =>
+      'Il faut des paires, des triplets et d\'autres étapes plus difficiles.';
 
   @override
   String get boardSize => 'Taille';
@@ -177,6 +192,52 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get controlUndo =>
       'Touchez Annuler le coup pour reprendre votre dernier coup.';
+
+  @override
+  String get sudokuHowToPlayIntro =>
+      'Remplissez chaque case vide avec un chiffre : de 1 à 9 sur une grille 9×9, de 1 à 6 sur 6×6, de 1 à 4 sur 4×4.';
+
+  @override
+  String get sudokuRuleRowTitle => 'Une fois par ligne';
+
+  @override
+  String get sudokuRuleRowExplanation =>
+      'Chaque chiffre est une fois dans chaque ligne.';
+
+  @override
+  String get sudokuRuleColumnTitle => 'Une fois par colonne';
+
+  @override
+  String get sudokuRuleColumnExplanation =>
+      'Chaque chiffre est une fois dans chaque colonne.';
+
+  @override
+  String get sudokuRuleBoxTitle => 'Une fois par bloc';
+
+  @override
+  String get sudokuRuleBoxExplanation =>
+      'Chaque chiffre est une fois dans chaque bloc. Les lignes épaisses montrent les blocs.';
+
+  @override
+  String get sudokuControlEnterDigit =>
+      'Touchez une case, puis touchez un chiffre sous la grille.';
+
+  @override
+  String get sudokuControlNotes =>
+      'Touchez Notes pour écrire de petits chiffres possibles. Touchez Notes encore pour écrire des chiffres normaux.';
+
+  @override
+  String get sudokuControlErase => 'Touchez Effacer pour vider la case.';
+
+  @override
+  String get sudokuControlClues =>
+      'Les chiffres en gras sont fixes. Vous ne pouvez pas les changer.';
+
+  @override
+  String get sudokuNotes => 'Notes';
+
+  @override
+  String get sudokuErase => 'Effacer';
 
   @override
   String get resetStatisticsTitle => 'Réinitialiser les statistiques?';
